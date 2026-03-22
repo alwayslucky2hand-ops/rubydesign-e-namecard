@@ -2,157 +2,136 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>後台管理 | 露比設計電子名片系統</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>後台管理 | 露比設計</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <style>
-    body { font-family: 'Inter', sans-serif; background-color: #FDF2F8; }
-    .glass-panel {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.4);
-    }
+    body { font-family: 'Inter', sans-serif; background-color: #FDF2F8; -webkit-tap-highlight-color: transparent; }
+    .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.5); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .pb-nav { padding-bottom: 80px; } 
+    .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
   </style>
 </head>
-<body class="min-h-screen text-gray-800">
+<body class="text-gray-800">
 
-  <div id="app" class="min-h-screen flex flex-col items-center justify-center p-4">
+  <div id="app" class="min-h-screen w-full flex flex-col items-center justify-center sm:p-4">
 
-    <div v-if="currentView === 'login'" class="w-full max-w-md p-8 rounded-2xl shadow-xl glass-panel">
-      <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Ruby Design.</h1>
-        <p class="text-gray-500 text-sm">請登入您的專屬電子名片後台</p>
+    <div v-if="currentView === 'login'" class="w-full max-w-md p-8 sm:rounded-3xl shadow-2xl glass-panel min-h-screen sm:min-h-0 flex flex-col justify-center">
+      <div class="text-center mb-10">
+        <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 mb-2">Ruby.</h1>
+        <p class="text-gray-500 text-sm">專屬電子名片管理中心</p>
       </div>
-      <form @submit.prevent="handleLogin" class="space-y-5">
-        <div>
-          <label class="block text-sm font-medium mb-1">帳號 (Email)</label>
-          <input v-model="loginForm.email" type="email" required class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-pink-400 outline-none">
-        </div>
-        <div>
-          <label class="block text-sm font-medium mb-1">密碼</label>
-          <input v-model="loginForm.password" type="password" required class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-pink-400 outline-none">
-        </div>
-        <p v-if="errorMessage" class="text-red-500 text-sm text-center">{{ errorMessage }}</p>
-        <button type="submit" :disabled="isLoading" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-3 rounded-lg transition">
-          {{ isLoading ? '驗證中...' : '登入系統' }}
+      <form @submit.prevent="handleLogin" class="space-y-6">
+        <div><input v-model="loginForm.email" type="email" required placeholder="帳號 (Email)" class="w-full px-5 py-4 bg-white/50 rounded-xl border outline-none focus:ring-2 focus:ring-pink-400"></div>
+        <div><input v-model="loginForm.password" type="password" required placeholder="密碼" class="w-full px-5 py-4 bg-white/50 rounded-xl border outline-none focus:ring-2 focus:ring-pink-400"></div>
+        <p v-if="errorMessage" class="text-red-500 text-sm text-center font-bold">{{ errorMessage }}</p>
+        <button type="submit" :disabled="isLoading" class="w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold py-4 rounded-xl shadow-lg transition-transform active:scale-95">
+          {{ isLoading ? '登入中...' : '登入系統' }}
         </button>
       </form>
-      <div class="mt-6 text-center text-sm">
-        還沒有帳號？ <a href="#" @click.prevent="currentView = 'register'" class="text-pink-600 font-bold hover:underline">立即申請付款與開通</a>
-      </div>
+      <div class="mt-8 text-center text-sm">還沒有帳號？ <a href="#" @click.prevent="currentView = 'register'" class="text-pink-600 font-bold">立即申請開通</a></div>
     </div>
 
-    <div v-if="currentView === 'register'" class="w-full max-w-4xl flex flex-col md:flex-row rounded-2xl shadow-xl overflow-hidden glass-panel">
-      <div class="md:w-1/2 bg-gradient-to-br from-pink-400 to-purple-500 p-10 text-white flex flex-col justify-center">
-        <h1 class="text-4xl font-bold mb-4">Ruby Design.</h1>
-        <p class="text-lg opacity-90 mb-8">打造世界級的個人品牌，<br>從一張會說話的 LINE 電子名片開始。</p>
-      </div>
-      <div class="md:w-1/2 p-10 bg-white">
-        <h2 class="text-2xl font-bold text-gray-800 mb-2">系統申請開通</h2>
+    <div v-if="currentView === 'register'" class="w-full max-w-md p-8 sm:rounded-3xl shadow-2xl glass-panel min-h-screen sm:min-h-0 flex flex-col justify-center">
+        <div class="text-center mb-8"><h1 class="text-3xl font-black text-gray-900 mb-2">系統申請開通</h1></div>
         <form @submit.prevent="handleRegister" class="space-y-5">
-          <div>
-            <label class="block text-sm font-medium mb-1">您的姓名 / 品牌名稱</label>
-            <input v-model="regForm.name" type="text" required class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-pink-400 outline-none">
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">聯絡信箱 (即登入帳號)</label>
-            <input v-model="regForm.email" type="email" required class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-pink-400 outline-none">
-          </div>
-          <div class="p-4 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600">
-            * 點擊下方按鈕將視為同意授權，系統將開通您的專屬雲端硬碟空間。
-          </div>
-          <button type="submit" :disabled="isLoading" class="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 rounded-lg transition">
-            {{ isLoading ? '建置中...' : '確認申請並取得帳號' }}
-          </button>
+            <div><input v-model="regForm.name" type="text" required placeholder="姓名 / 品牌名稱" class="w-full px-5 py-4 bg-white/50 rounded-xl border outline-none focus:ring-2 focus:ring-pink-400"></div>
+            <div><input v-model="regForm.email" type="email" required placeholder="聯絡信箱" class="w-full px-5 py-4 bg-white/50 rounded-xl border outline-none focus:ring-2 focus:ring-pink-400"></div>
+            <button type="submit" :disabled="isLoading" class="w-full bg-gray-900 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95">
+              {{ isLoading ? '建置中...' : '確認申請' }}
+            </button>
         </form>
         <p v-if="isRegSuccess" class="mt-4 text-green-600 text-sm font-bold text-center">✅ 申請成功！請至 Email 收取密碼。</p>
-        <div class="mt-6 text-center text-sm">
-          已經有帳號了？ <a href="#" @click.prevent="currentView = 'login'" class="text-pink-600 font-bold hover:underline">返回登入</a>
-        </div>
-      </div>
+        <div class="mt-6 text-center text-sm"><a href="#" @click.prevent="currentView = 'login'" class="text-gray-500 font-bold">返回登入</a></div>
     </div>
 
-    <div v-if="currentView === 'dashboard'" class="w-full max-w-6xl min-h-[80vh] flex flex-col rounded-2xl shadow-xl glass-panel bg-white/90 overflow-hidden">
+    <div v-if="currentView === 'dashboard'" class="w-full sm:max-w-6xl min-h-screen sm:min-h-[85vh] flex flex-col sm:rounded-3xl shadow-2xl bg-gray-50 overflow-hidden relative pb-nav sm:pb-0">
       
-      <div class="flex justify-between items-center p-6 border-b border-gray-200 bg-white">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-800">Ruby Design 後台管理</h1>
-          <p class="text-sm text-gray-500">歡迎回來，{{ currentUser.name }}</p>
+      <div class="flex justify-between items-center p-5 bg-white border-b border-gray-100 sticky top-0 z-20">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-400 to-purple-500 text-white flex items-center justify-center font-bold text-lg">{{ currentUser?.name.charAt(0) }}</div>
+          <div><h1 class="text-lg font-black text-gray-800 leading-tight">Ruby Design.</h1><p class="text-xs text-gray-500">{{ currentUser?.name }}</p></div>
         </div>
-        <button @click="logout" class="text-sm text-gray-500 hover:text-red-500 font-medium">登出系統</button>
+        <button @click="logout" class="p-2 text-gray-400 hover:text-red-500"><i class="ph ph-sign-out text-xl"></i></button>
       </div>
 
-      <div class="flex border-b border-gray-200 bg-gray-50">
-        <button @click="activeTab = 'profile'" :class="{'border-b-2 border-pink-500 text-pink-600 font-bold': activeTab === 'profile'}" class="flex-1 py-4 text-center font-medium text-gray-500 hover:bg-gray-100 transition">
-          👤 Profile 個人簡介頁設定
-        </button>
-        <button @click="activeTab = 'line'" :class="{'border-b-2 border-pink-500 text-pink-600 font-bold': activeTab === 'line'}" class="flex-1 py-4 text-center font-medium text-gray-500 hover:bg-gray-100 transition">
-          💬 LINE 輪播名片設定
-        </button>
-      </div>
-
-      <div class="p-8 flex-1 overflow-y-auto">
+      <div class="p-5 sm:p-8 flex-1 overflow-y-auto no-scrollbar">
         
-        <div v-if="activeTab === 'profile'" class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
-            <h2 class="text-xl font-bold mb-4">基本資料與按鈕設計</h2>
-            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
-              <h3 class="font-bold text-sm mb-3">＋ 新增連結按鈕</h3>
-              <div class="flex gap-2">
-                <input type="text" placeholder="按鈕文字 (例: 官方網站)" class="flex-1 px-3 py-2 border rounded outline-none text-sm">
-                <input type="text" placeholder="跳轉連結" class="flex-1 px-3 py-2 border rounded outline-none text-sm">
-                <button class="bg-gray-900 text-white px-4 py-2 rounded text-sm hover:bg-gray-800">新增</button>
-              </div>
-            </div>
-
-            <h3 class="font-bold text-sm mb-3">現有按鈕清單</h3>
-            <div class="space-y-3">
-              <div class="flex items-center justify-between p-3 bg-white border border-gray-200 rounded shadow-sm">
-                <div class="flex items-center gap-3">
-                  <span class="text-2xl">🌐</span>
-                  <div>
-                    <p class="font-bold text-sm">前往官方網站</p>
-                    <p class="text-xs text-gray-400">https://example.com</p>
-                  </div>
-                </div>
-                <div class="flex items-center gap-4">
-                  <span class="text-xs bg-pink-100 text-pink-700 px-2 py-1 rounded-full font-bold">點擊次數：128</span>
-                  <button class="text-red-500 hover:text-red-700 text-sm">刪除</button>
-                </div>
-              </div>
-            </div>
+        <div v-show="activeTab === 'profile'">
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+            <h2 class="text-lg font-bold mb-4 flex items-center gap-2"><i class="ph-fill ph-link text-pink-500"></i> 新增連結按鈕</h2>
+            <form @submit.prevent="addNewButton" class="flex flex-col sm:flex-row gap-3">
+              <input v-model="newButton.title" type="text" required placeholder="按鈕文字 (例: 預約諮詢)" class="flex-1 px-4 py-3 bg-gray-50 rounded-xl outline-none border focus:ring-2 focus:ring-pink-400">
+              <input v-model="newButton.url" type="url" required placeholder="https://..." class="flex-1 px-4 py-3 bg-gray-50 rounded-xl outline-none border focus:ring-2 focus:ring-pink-400">
+              <button type="submit" :disabled="isSaving" class="bg-gray-900 text-white font-bold px-6 py-3 rounded-xl hover:bg-black disabled:opacity-50">
+                {{ isSaving ? '儲存中...' : '新增' }}
+              </button>
+            </form>
           </div>
-          <div class="flex justify-center border-l border-gray-200">
-            <div class="w-[300px] h-[600px] border-4 border-gray-800 rounded-[3rem] p-4 bg-gray-50 relative overflow-hidden shadow-2xl">
-              <div class="absolute top-0 inset-x-0 h-6 bg-gray-800 rounded-b-xl w-32 mx-auto"></div>
-              <p class="text-center mt-8 text-gray-400 text-sm">Profile 即時預覽區</p>
+
+          <h3 class="font-bold text-gray-700 mb-3 px-1 flex justify-between items-center">
+            現有按鈕清單 ({{ buttons.length }})
+            <span v-if="isLoadingData" class="text-xs text-pink-500 animate-pulse">更新中...</span>
+          </h3>
+          
+          <div class="space-y-3">
+            <div v-for="(btn, index) in buttons" :key="btn.id" class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white border border-gray-100 rounded-2xl shadow-sm gap-4 relative overflow-hidden group">
+              <div class="absolute left-0 top-0 bottom-0 w-1 bg-pink-500"></div>
+              <div class="flex items-center gap-4 pl-2">
+                <div class="w-10 h-10 rounded-full bg-pink-50 flex items-center justify-center text-pink-500 font-bold">{{ index + 1 }}</div>
+                <div><p class="font-bold text-gray-800">{{ btn.title }}</p><p class="text-xs text-blue-500">{{ btn.url }}</p></div>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="text-xs font-bold text-gray-600 bg-gray-50 px-3 py-1.5 rounded-lg">{{ btn.clicks }} 點擊</span>
+                <button @click="deleteButton(btn.id, index)" class="text-red-400 hover:text-red-600 p-2 bg-red-50 rounded-lg"><i class="ph ph-trash"></i></button>
+              </div>
             </div>
           </div>
         </div>
 
-        <div v-if="activeTab === 'line'" class="space-y-6">
-          <h2 class="text-xl font-bold mb-4">LINE 輪播圖文與圖片庫管理</h2>
-          
-          <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 transition cursor-pointer">
-            <span class="text-4xl mb-2 block">📁</span>
-            <p class="font-bold text-gray-700">點擊或拖曳上傳圖片</p>
-            <p class="text-xs text-gray-500 mt-1">圖片將自動儲存至您的 Google Drive 專屬資料夾</p>
-          </div>
-
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-            <div class="relative group rounded-lg overflow-hidden border border-gray-200 shadow-sm aspect-square bg-gray-100">
-              <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
-                <button class="bg-white text-gray-900 text-xs px-2 py-1 rounded">插入輪播</button>
-                <button class="bg-red-500 text-white text-xs px-2 py-1 rounded">刪除</button>
+        <div v-show="activeTab === 'line'">
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 text-center">
+            <h2 class="text-lg font-bold mb-2 flex items-center justify-center gap-2"><i class="ph-fill ph-image text-purple-500"></i> 雲端圖片上傳</h2>
+            <input type="file" ref="fileInput" @change="handleFileSelect" accept="image/*" class="hidden">
+            <button @click="$refs.fileInput.click()" class="w-full py-8 border-2 border-dashed border-purple-300 rounded-xl bg-purple-50 text-purple-600 font-bold hover:bg-purple-100">
+              點擊選擇照片
+            </button>
+            
+            <div v-if="previewImage" class="mt-4 p-4 border rounded-xl bg-gray-50 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <img :src="previewImage" class="w-16 h-16 object-cover rounded-lg shadow-sm">
+                <p class="text-sm font-bold text-gray-700 truncate w-32">{{ selectedFile.name }}</p>
               </div>
-              <p class="text-center mt-[40%] text-gray-400 text-sm">圖片 1</p>
+              <button @click="uploadImageToDrive" :disabled="isUploading" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md disabled:opacity-50">
+                {{ isUploading ? '上傳中...' : '確認上傳' }}
+              </button>
             </div>
+            <p v-if="uploadMsg" class="mt-2 text-sm font-bold text-green-600">{{ uploadMsg }}</p>
           </div>
-
         </div>
 
       </div>
+
+      <div class="sm:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t flex justify-around items-center pb-safe pt-2 px-2 z-30 shadow-lg">
+        <button @click="activeTab = 'profile'" class="flex-1 flex flex-col items-center p-2 gap-1 rounded-xl" :class="activeTab === 'profile' ? 'text-pink-600' : 'text-gray-400'">
+          <i class="text-2xl" :class="activeTab === 'profile' ? 'ph-fill ph-user-circle' : 'ph ph-user-circle'"></i>
+          <span class="text-[10px] font-bold">個人首頁</span>
+        </button>
+        <button @click="activeTab = 'line'" class="flex-1 flex flex-col items-center p-2 gap-1 rounded-xl" :class="activeTab === 'line' ? 'text-purple-600' : 'text-gray-400'">
+          <i class="text-2xl" :class="activeTab === 'line' ? 'ph-fill ph-cards' : 'ph ph-cards'"></i>
+          <span class="text-[10px] font-bold">LINE 輪播</span>
+        </button>
+      </div>
+      
+      <div class="hidden sm:flex border-t bg-white">
+        <button @click="activeTab = 'profile'" :class="{'border-t-2 border-pink-500 text-pink-600 bg-pink-50/50': activeTab === 'profile'}" class="flex-1 py-4 text-center font-bold">👤 Profile 設定</button>
+        <button @click="activeTab = 'line'" :class="{'border-t-2 border-purple-500 text-purple-600 bg-purple-50/50': activeTab === 'line'}" class="flex-1 py-4 text-center font-bold">💬 圖片管理</button>
+      </div>
+
     </div>
 
   </div>
@@ -162,91 +141,164 @@
 
     createApp({
       setup() {
-        // === 狀態管理 ===
-        // 如果 localStorage 有會員資料，預設進入 dashboard；否則進入 login
         const currentView = ref('login'); 
-        const activeTab = ref('profile'); // 'profile' 或是 'line'
+        const activeTab = ref('profile'); 
         const currentUser = ref(null);
-
-        // === 表單資料 ===
+        
         const loginForm = ref({ email: '', password: '' });
         const regForm = ref({ name: '', email: '' });
         
-        // === 系統狀態 ===
         const isLoading = ref(false);
+        const isLoadingData = ref(false);
+        const isSaving = ref(false);
         const errorMessage = ref('');
         const isRegSuccess = ref(false);
 
-        // 🟢 您的 GAS Web App URL
+        // 🟢 替換為您的最新 GAS Web App URL
         const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzFIevyKloCU9wbGMUdAES-BKIr9KxXVUZgfIfRJmrWlZnBR6QuE9kIcESvbATzW0t4bw/exec';
 
-        // 檢查是否已登入
+        const buttons = ref([]);
+        const newButton = ref({ title: '', url: '' });
+
+        const selectedFile = ref(null);
+        const previewImage = ref(null);
+        const isUploading = ref(false);
+        const uploadMsg = ref('');
+
+        // ==== 核心 API 呼叫模組 ====
+        const apiCall = async (payload) => {
+          const res = await fetch(GAS_API_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+          return await res.json();
+        };
+
+        // ==== 載入按鈕清單 ====
+        const fetchButtons = async () => {
+          if (!currentUser.value) return;
+          isLoadingData.value = true;
+          try {
+            const result = await apiCall({ action: 'getButtons', memberId: currentUser.value.memberId });
+            if (result.status === 'success') buttons.value = result.data;
+          } catch(e) { console.error('讀取按鈕失敗', e); }
+          finally { isLoadingData.value = false; }
+        };
+
         onMounted(() => {
           const savedUser = localStorage.getItem('ruby_user');
           if (savedUser) {
             currentUser.value = JSON.parse(savedUser);
             currentView.value = 'dashboard';
+            fetchButtons(); // 登入後自動抓取按鈕
           }
         });
 
-        // 登入方法
+        // ==== 登入與註冊 ====
         const handleLogin = async () => {
-          isLoading.value = true;
-          errorMessage.value = '';
+          isLoading.value = true; errorMessage.value = '';
           try {
-            const response = await fetch(GAS_API_URL, {
-              method: 'POST',
-              body: JSON.stringify({ action: 'login', ...loginForm.value })
-            });
-            const result = await response.json();
+            const result = await apiCall({ action: 'login', ...loginForm.value });
             if(result.status === 'success') {
               currentUser.value = result.data;
               localStorage.setItem('ruby_user', JSON.stringify(result.data));
               currentView.value = 'dashboard';
-              loginForm.value = { email: '', password: '' };
-            } else {
-              errorMessage.value = result.message;
-            }
-          } catch (e) {
-            errorMessage.value = '系統連線異常，請稍後再試。';
-          } finally {
-            isLoading.value = false;
-          }
+              fetchButtons(); // 登入成功後抓取按鈕
+            } else { errorMessage.value = result.message; }
+          } catch (e) { errorMessage.value = '系統連線異常'; } 
+          finally { isLoading.value = false; }
         };
 
-        // 註冊方法
         const handleRegister = async () => {
-          isLoading.value = true;
-          isRegSuccess.value = false;
+          isLoading.value = true; isRegSuccess.value = false;
           try {
-            const response = await fetch(GAS_API_URL, {
-              method: 'POST',
-              body: JSON.stringify({ action: 'register', ...regForm.value })
+            const result = await apiCall({ action: 'register', ...regForm.value });
+            if(result.status === 'success') { isRegSuccess.value = true; regForm.value = { name: '', email: '' }; }
+          } catch (e) { alert('系統錯誤'); } 
+          finally { isLoading.value = false; }
+        };
+
+        const logout = () => { localStorage.removeItem('ruby_user'); currentUser.value = null; currentView.value = 'login'; buttons.value = []; };
+
+        // ==== 動作：新增按鈕 ====
+        const addNewButton = async () => {
+          if(!newButton.value.title || !newButton.value.url) return;
+          isSaving.value = true;
+          try {
+            const result = await apiCall({
+              action: 'addButton',
+              memberId: currentUser.value.memberId,
+              title: newButton.value.title,
+              url: newButton.value.url
             });
-            const result = await response.json();
             if(result.status === 'success') {
-              isRegSuccess.value = true;
-              regForm.value = { name: '', email: '' };
+              buttons.value.push(result.data); // 更新畫面
+              newButton.value = { title: '', url: '' };
             }
-          } catch (e) {
-            alert('系統錯誤，請稍後再試。');
-          } finally {
-            isLoading.value = false;
+          } catch (e) { alert('新增失敗'); }
+          finally { isSaving.value = false; }
+        };
+
+        // ==== 動作：刪除按鈕 ====
+        const deleteButton = async (id, index) => {
+          if(confirm('確定要刪除這個按鈕嗎？')) {
+            // 先在畫面上隱藏，優化體驗
+            const deletedBtn = buttons.value.splice(index, 1)[0];
+            try {
+              await apiCall({ action: 'deleteButton', memberId: currentUser.value.memberId, buttonId: id });
+            } catch (e) {
+              alert('刪除失敗，已復原畫面');
+              buttons.value.splice(index, 0, deletedBtn); // 失敗則復原
+            }
           }
         };
 
-        // 登出方法
-        const logout = () => {
-          localStorage.removeItem('ruby_user');
-          currentUser.value = null;
-          currentView.value = 'login';
-          activeTab.value = 'profile';
+        // ==== 動作：圖片選擇與 Base64 轉換上傳 ====
+        const handleFileSelect = (event) => {
+          const file = event.target.files[0];
+          if (!file) return;
+          selectedFile.value = file;
+          previewImage.value = URL.createObjectURL(file);
+          uploadMsg.value = '';
+        };
+
+        const uploadImageToDrive = () => {
+          if(!selectedFile.value) return;
+          isUploading.value = true; uploadMsg.value = '';
+          
+          const reader = new FileReader();
+          reader.onload = async (e) => {
+            const dataUrl = e.target.result;
+            const mimeType = dataUrl.split(';')[0].split(':')[1];
+            const base64Str = dataUrl.split(',')[1];
+            const extension = selectedFile.value.name.split('.').pop();
+
+            try {
+              const result = await apiCall({
+                action: 'uploadImage',
+                memberId: currentUser.value.memberId,
+                email: currentUser.value.email,
+                name: currentUser.value.name,
+                folderId: currentUser.value.folderId,
+                fileBase64: base64Str,
+                mimeType: mimeType,
+                extension: extension
+              });
+              if(result.status === 'success') {
+                uploadMsg.value = '圖片已成功存入專屬雲端資料夾！';
+                setTimeout(() => { previewImage.value = null; selectedFile.value = null; uploadMsg.value = ''; }, 3000);
+              }
+            } catch (err) { alert('上傳失敗'); }
+            finally { isUploading.value = false; }
+          };
+          reader.readAsDataURL(selectedFile.value);
         };
 
         return { 
-          currentView, activeTab, currentUser, 
-          loginForm, regForm, isLoading, errorMessage, isRegSuccess,
-          handleLogin, handleRegister, logout
+          currentView, activeTab, currentUser, buttons, newButton, isLoadingData,
+          loginForm, regForm, isLoading, isSaving, errorMessage, isRegSuccess,
+          selectedFile, previewImage, isUploading, uploadMsg,
+          handleLogin, handleRegister, logout, addNewButton, deleteButton, handleFileSelect, uploadImageToDrive
         };
       }
     }).mount('#app');
