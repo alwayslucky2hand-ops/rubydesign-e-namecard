@@ -15,10 +15,10 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
-    .mockup-phone { width: 340px; height: 700px; border: 12px solid #1f2937; border-radius: 40px; overflow-y: auto; background: #fff; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: 0 auto;}
+    .mockup-phone { width: 340px; min-height: 700px; border: 12px solid #1f2937; border-radius: 40px; overflow: hidden; background: #fff; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: 0 auto; display: flex; flex-direction: column;}
     .mockup-notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 120px; height: 24px; background: #1f2937; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; z-index: 10; }
     
-    .mockup-line-chat { width: 340px; height: 700px; border: 12px solid #1f2937; border-radius: 40px; overflow: hidden; background: #749cbd; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: 0 auto; display: flex; flex-direction: column;}
+    .mockup-line-chat { width: 340px; min-height: 700px; border: 12px solid #1f2937; border-radius: 40px; overflow: hidden; background: #749cbd; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: 0 auto; display: flex; flex-direction: column;}
     .line-header { background: #262626; color: white; padding: 35px 15px 15px 15px; font-weight: bold; display: flex; align-items: center; gap: 10px; font-size: 15px;}
     .line-carousel-container { display: flex; gap: 10px; overflow-x: auto; padding: 20px 15px; scroll-snap-type: x mandatory;}
     .line-card { min-width: 260px; max-width: 260px; background: white; border-radius: 16px; overflow: hidden; scroll-snap-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; flex-direction: column;}
@@ -33,7 +33,7 @@
 
     .cropper-view-box, .cropper-face { border-radius: 50%; }
 
-    /* 🌟 5階同色系漸層 20x20 矩陣 */
+    /* 🌟 色系漸層矩陣 */
     .color-grid-matrix { display: flex; flex-direction: column; gap: 6px; margin-top: 10px;}
     .color-row { display: flex; gap: 6px; justify-content: space-between; }
     .color-swatch { width: 22px; height: 22px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s;}
@@ -43,7 +43,7 @@
 </head>
 <body class="text-gray-800">
 
-  <div id="app" class="min-h-screen w-full flex flex-col items-center justify-center sm:p-4 relative">
+  <div id="app" class="min-h-screen w-full flex flex-col items-center justify-start sm:p-4 relative">
     
     <transition name="toast">
         <div v-if="toast.show" class="fixed top-5 left-1/2 z-[100] px-6 py-3 rounded-full shadow-xl font-bold text-white flex items-center gap-2" :class="toast.type === 'success' ? 'bg-gray-900' : 'bg-red-500'">
@@ -65,7 +65,7 @@
         </div>
     </transition>
 
-    <div v-if="currentView === 'login'" class="w-full max-w-md p-8 sm:rounded-3xl shadow-2xl glass-panel">
+    <div v-if="currentView === 'login'" class="w-full max-w-md p-8 mt-10 sm:rounded-3xl shadow-2xl glass-panel">
         <h1 class="text-4xl font-black text-center text-pink-500 mb-2">Ruby.</h1>
         <p class="text-center text-gray-500 font-bold mb-6 text-sm">Brand.Design 電子名片系統</p>
         <form @submit.prevent="handleLogin" class="space-y-4">
@@ -76,25 +76,25 @@
         <div class="mt-6 text-center text-sm">還沒有帳號？ <a href="#" @click.prevent="currentView = 'register'" class="text-pink-600 font-bold hover:underline">立即申請開通</a></div>
     </div>
 
-    <div v-if="currentView === 'register'" class="w-full max-w-md p-8 sm:rounded-3xl shadow-2xl glass-panel">
+    <div v-if="currentView === 'register'" class="w-full max-w-md p-8 mt-10 sm:rounded-3xl shadow-2xl glass-panel">
         <h1 class="text-3xl font-black text-center text-gray-900 mb-6">系統申請開通</h1>
         <form @submit.prevent="handleRegister" class="space-y-4">
-            <input v-model="regForm.name" type="text" required placeholder="姓名 / 品牌名稱" class="w-full p-4 rounded-xl border outline-none focus:ring-2 focus:ring-pink-400">
-            <input v-model="regForm.email" type="email" required placeholder="聯絡信箱" class="w-full p-4 rounded-xl border outline-none focus:ring-2 focus:ring-pink-400">
+            <input v-model="regForm.name" type="text" required placeholder="姓名 / 品牌名稱" class="w-full p-4 rounded-xl border outline-none">
+            <input v-model="regForm.email" type="email" required placeholder="聯絡信箱" class="w-full p-4 rounded-xl border outline-none">
             <button type="submit" :disabled="isLoading" class="w-full bg-gray-900 hover:bg-black transition text-white p-4 rounded-xl font-bold flex justify-center items-center gap-2"><i v-if="isLoading" class="ph ph-spinner animate-spin"></i> 確認申請</button>
         </form>
         <p v-if="isRegSuccess" class="mt-4 text-green-600 text-sm font-bold text-center">✅ 申請成功！請至 Email 收取密碼。</p>
         <div class="mt-6 text-center text-sm"><a href="#" @click.prevent="currentView = 'login'" class="text-pink-600 font-bold hover:underline">返回登入</a></div>
     </div>
 
-    <div v-if="currentView === 'dashboard' && currentUser" class="w-full sm:max-w-7xl h-screen sm:h-[90vh] flex flex-col sm:rounded-3xl shadow-2xl bg-gray-50 overflow-hidden relative">
+    <div v-if="currentView === 'dashboard' && currentUser" class="w-full sm:max-w-7xl min-h-screen sm:my-8 flex flex-col sm:rounded-3xl shadow-2xl bg-gray-50 relative pb-32">
       
-      <div class="flex justify-between items-center p-4 sm:p-5 bg-white border-b sticky top-0 z-20 shadow-sm shrink-0">
+      <div class="flex justify-between items-center p-4 sm:p-5 bg-white border-b sticky top-0 z-40 shadow-sm shrink-0 rounded-t-3xl">
         <h1 class="text-base sm:text-lg font-black">Ruby.Brand.Design <span class="text-sm font-normal text-gray-500 hidden sm:inline-block">| {{ currentUser.name }}</span></h1>
         <button @click="logout" class="text-gray-400 font-bold hover:bg-gray-100 p-2 rounded-lg transition flex items-center gap-1"><i class="ph ph-sign-out text-xl"></i> <span class="hidden sm:inline">登出</span></button>
       </div>
 
-      <div class="p-4 sm:p-8 flex-1 overflow-y-auto no-scrollbar pb-40 relative">
+      <div class="p-4 sm:p-8 flex-1 relative">
         <div v-if="isFetchingData" class="absolute inset-0 bg-white/80 z-10 flex flex-col items-center justify-center backdrop-blur-sm">
             <i class="ph ph-spinner animate-spin text-4xl text-pink-500 mb-2"></i><p class="text-gray-500 font-bold text-sm">載入專屬資料...</p>
         </div>
@@ -102,22 +102,22 @@
         <div v-show="activeTab === 'profile'" class="w-full">
             <div class="flex lg:hidden bg-gray-200 p-1 rounded-xl w-full max-w-[240px] mx-auto mb-6 relative">
                 <div class="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-lg shadow transition-transform duration-300" :class="mobileViewModeProfile === 'preview' ? 'translate-x-0' : 'translate-x-[calc(100%+8px)]'"></div>
-                <button @click="mobileViewModeProfile = 'preview'" class="flex-1 py-2 text-sm font-bold z-10" :class="mobileViewModeProfile === 'preview' ? 'text-gray-900' : 'text-gray-500'">預覽區</button>
-                <button @click="mobileViewModeProfile = 'edit'" class="flex-1 py-2 text-sm font-bold z-10" :class="mobileViewModeProfile === 'edit' ? 'text-gray-900' : 'text-gray-500'">編輯區</button>
+                <button @click="mobileViewModeProfile = 'preview'" class="flex-1 py-2 text-sm font-bold z-10 transition-colors" :class="mobileViewModeProfile === 'preview' ? 'text-gray-900' : 'text-gray-500'">預覽區</button>
+                <button @click="mobileViewModeProfile = 'edit'" class="flex-1 py-2 text-sm font-bold z-10 transition-colors" :class="mobileViewModeProfile === 'edit' ? 'text-gray-900' : 'text-gray-500'">編輯區</button>
             </div>
 
             <div class="flex flex-col lg:flex-row gap-8 justify-center items-start">
                 
-                <div class="mockup-phone no-scrollbar transition-all" :class="{'hidden lg:block': mobileViewModeProfile === 'edit'}">
+                <div class="sticky top-24 mockup-phone no-scrollbar transition-all shrink-0" :class="{'hidden lg:flex': mobileViewModeProfile === 'edit'}">
                     <div class="mockup-notch"></div>
-                    <div class="pt-12 px-6 pb-10 flex flex-col items-center min-h-full transition-colors duration-300" :style="{ backgroundColor: profile.bgColor }">
+                    <div class="pt-12 px-6 pb-10 flex flex-col items-center flex-1 transition-colors duration-300" :style="{ backgroundColor: profile.bgColor }">
                         <div class="relative mt-6 mb-4">
                             <img :src="profile.avatarUrl || 'https://via.placeholder.com/150'" class="w-28 h-28 rounded-full object-cover border-4 border-white shadow-lg bg-gray-100">
                         </div>
                         <div class="text-xl font-black text-center mb-2 text-gray-900">{{ profile.name || '顯示名稱' }}</div>
                         <div class="text-sm text-center text-gray-600 whitespace-pre-wrap leading-relaxed w-full break-words">{{ profile.bio || '尚未填寫自介' }}</div>
 
-                        <div class="w-full mt-6 space-y-3">
+                        <div class="w-full mt-6 space-y-3 flex-1 overflow-y-auto no-scrollbar">
                             <div v-for="btn in buttons" :key="btn.id" class="w-full rounded-2xl shadow-sm flex items-center gap-3 px-3 py-3 border border-gray-200" :style="{ backgroundColor: btn.color || '#ffffff' }">
                                 <div class="w-10 h-10 rounded-xl bg-white/50 flex items-center justify-center overflow-hidden shrink-0"><img v-if="btn.iconUrl" :src="btn.iconUrl" class="w-full h-full object-cover"><i v-else class="ph ph-link text-gray-800"></i></div>
                                 <div class="flex-1 font-bold text-gray-800 text-center pr-10 truncate">{{ btn.title || '按鈕文字' }}</div>
@@ -153,21 +153,21 @@
                         <div class="flex gap-4 mb-4">
                             <div @click="openMediaLibrary('avatar')" class="w-20 h-20 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer relative overflow-hidden group shrink-0">
                                 <img v-if="profile.avatarUrl" :src="profile.avatarUrl" class="w-full h-full object-cover">
-                                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white"><i class="ph ph-camera text-xl"></i></div>
+                                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="ph ph-camera text-xl"></i></div>
                             </div>
                             <div class="flex-1 flex flex-col justify-center">
                                 <label class="text-xs font-bold text-gray-500 mb-1">顯示名稱</label>
                                 <input v-model="profile.name" class="w-full text-sm font-bold p-2.5 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-pink-400 bg-gray-50" placeholder="輸入名稱">
                             </div>
                         </div>
-                        <label class="text-xs font-bold text-gray-500 mb-1 block">自我介紹</label>
-                        <textarea id="bio-textarea-edit" v-model="profile.bio" @input="autoResize('bio-textarea-edit')" class="w-full text-sm p-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-pink-400 bg-gray-50 resize-none overflow-hidden" rows="2" placeholder="介紹..."></textarea>
+                        <label class="text-xs font-bold text-gray-500 mb-1 block">自我介紹 (自動換行)</label>
+                        <textarea id="bio-textarea-edit" v-model="profile.bio" @input="autoResize('bio-textarea-edit')" class="w-full text-sm p-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-pink-400 bg-gray-50 resize-none overflow-hidden" rows="2" placeholder="寫一段簡短的介紹..."></textarea>
                     </div>
 
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-6">
                         <div class="flex justify-between items-center border-b pb-2 mb-4">
                             <h3 class="font-black text-lg text-gray-800">按鈕管理</h3>
-                            <button @click="addNewButton" class="text-pink-600 font-bold text-xs bg-pink-50 px-3 py-1.5 rounded-lg"><i class="ph ph-plus"></i> 新增</button>
+                            <button @click="addNewButton" class="text-pink-600 font-bold text-xs bg-pink-50 px-3 py-1.5 rounded-lg hover:bg-pink-100"><i class="ph ph-plus"></i> 新增</button>
                         </div>
                         
                         <div class="space-y-4">
@@ -179,13 +179,13 @@
                                 </div>
 
                                 <div class="flex gap-3 mb-2 pr-20">
-                                    <div @click="openMediaLibrary('buttonIcon', index)" class="w-12 h-12 rounded-xl bg-white border border-gray-200 flex items-center justify-center cursor-pointer overflow-hidden shrink-0 group relative">
+                                    <div @click="openMediaLibrary('buttonIcon', index)" class="w-12 h-12 rounded-xl bg-white border border-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-100 overflow-hidden shrink-0 relative group">
                                         <img v-if="btn.iconUrl" :src="btn.iconUrl" class="w-full h-full object-cover"><i v-else class="ph ph-image text-gray-400 text-xl"></i>
-                                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-bold">更換</div>
+                                        <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-bold">更換</div>
                                     </div>
                                     <div class="flex-1 space-y-2">
-                                        <input v-model="btn.title" class="w-full text-sm font-bold px-3 py-2 rounded-lg border outline-none bg-white" placeholder="文字">
-                                        <input v-model="btn.url" class="w-full text-xs px-3 py-2 rounded-lg border outline-none bg-white" placeholder="連結">
+                                        <input v-model="btn.title" class="w-full text-sm font-bold px-3 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-pink-400 bg-white" placeholder="按鈕文字">
+                                        <input v-model="btn.url" class="w-full text-xs px-3 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-pink-400 bg-white" placeholder="連結 https://...">
                                     </div>
                                 </div>
                                 
@@ -200,7 +200,7 @@
                                         <div v-if="activePaletteId === 'btn_' + btn.id" class="mt-3 bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
                                             <div class="flex justify-between items-center mb-2">
                                                 <span class="text-[10px] font-bold text-gray-400">漸層色系</span>
-                                                <div class="relative w-5 h-5 rounded-full cursor-pointer icolor-wheel"><input type="color" v-model="btn.color" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"></div>
+                                                <div class="relative w-5 h-5 rounded-full cursor-pointer icolor-wheel border border-gray-200"><input type="color" v-model="btn.color" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"></div>
                                             </div>
                                             <div class="color-grid-matrix">
                                                 <div v-for="(row, rIdx) in colorMatrix" :key="rIdx" class="color-row">
@@ -224,17 +224,17 @@
             
             <div class="flex lg:hidden bg-gray-200 p-1 rounded-xl w-full max-w-[240px] mx-auto mb-6 relative">
                 <div class="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-lg shadow transition-transform duration-300" :class="mobileViewModeSlide === 'preview' ? 'translate-x-0' : 'translate-x-[calc(100%+8px)]'"></div>
-                <button @click="mobileViewModeSlide = 'preview'" class="flex-1 py-2 text-sm font-bold z-10" :class="mobileViewModeSlide === 'preview' ? 'text-gray-900' : 'text-gray-500'">預覽區</button>
-                <button @click="mobileViewModeSlide = 'edit'" class="flex-1 py-2 text-sm font-bold z-10" :class="mobileViewModeSlide === 'edit' ? 'text-gray-900' : 'text-gray-500'">編輯區</button>
+                <button @click="mobileViewModeSlide = 'preview'" class="flex-1 py-2 text-sm font-bold z-10 transition-colors" :class="mobileViewModeSlide === 'preview' ? 'text-gray-900' : 'text-gray-500'">預覽區</button>
+                <button @click="mobileViewModeSlide = 'edit'" class="flex-1 py-2 text-sm font-bold z-10 transition-colors" :class="mobileViewModeSlide === 'edit' ? 'text-gray-900' : 'text-gray-500'">編輯區</button>
             </div>
 
             <div class="flex flex-col lg:flex-row gap-8 justify-center items-start">
                 
-                <div class="mockup-line-chat no-scrollbar transition-all" :class="{'hidden lg:flex': mobileViewModeSlide === 'edit'}">
+                <div class="sticky top-24 mockup-line-chat no-scrollbar transition-all shrink-0" :class="{'hidden lg:flex': mobileViewModeSlide === 'edit'}">
                     <div class="mockup-notch"></div>
                     <div class="line-header"><i class="ph ph-caret-left text-xl"></i> Ruby.Brand.Design</div>
                     <div class="flex-1 overflow-y-auto no-scrollbar pb-6 flex flex-col justify-end">
-                        <div v-if="slides.length === 0" class="text-center text-white/50 text-sm mt-10">尚無卡片，請從編輯區新增</div>
+                        <div v-if="slides.length === 0" class="text-center text-white/50 text-sm mt-10">尚無輪播卡片，請從編輯區新增</div>
                         <div class="line-carousel-container no-scrollbar">
                             <div v-for="slide in slides" :key="slide.id" class="line-card flex flex-col shrink-0 pb-2" :style="{ backgroundColor: slide.bgColor || '#ffffff' }">
                                 <div class="h-40 bg-gray-200 relative shrink-0 border-b border-gray-100">
@@ -257,12 +257,12 @@
 
                 <div class="w-full lg:w-[500px]" :class="{'hidden lg:block': mobileViewModeSlide === 'preview'}">
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                        <div class="flex justify-between items-center border-b pb-2 mb-4">
+                        <div class="flex justify-between items-center border-b pb-4 mb-4">
                             <h3 class="font-black text-lg text-gray-800">輪播卡片管理</h3>
                             <button @click="addNewSlide" class="text-pink-600 font-bold text-xs bg-pink-50 px-3 py-1.5 rounded-lg"><i class="ph ph-plus"></i> 新增</button>
                         </div>
                         
-                        <div class="space-y-6 max-h-[500px] overflow-y-auto pr-2 no-scrollbar">
+                        <div class="space-y-6">
                             <div v-for="(slide, index) in slides" :key="slide.id" class="bg-gray-50 border border-gray-200 p-4 rounded-2xl relative">
                                 <div class="absolute right-3 top-3 flex gap-1 z-10">
                                     <button @click="moveItem(slides, index, -1)" :disabled="index === 0" class="p-1 bg-white rounded shadow-sm text-gray-500"><i class="ph ph-arrow-up"></i></button>
@@ -276,15 +276,15 @@
                                     </div>
                                     <div class="flex-1 space-y-2">
                                         <input v-model="slide.title" class="w-full text-sm font-bold p-2.5 rounded-xl border bg-white outline-none focus:ring-1 focus:ring-pink-400" placeholder="標題">
-                                        <textarea v-model="slide.description" class="w-full text-xs p-2.5 rounded-xl border bg-white outline-none resize-none focus:ring-1 focus:ring-pink-400" rows="2" placeholder="描述"></textarea>
+                                        <textarea v-model="slide.description" @input="autoResize('desc_' + slide.id)" :id="'desc_' + slide.id" class="w-full text-xs p-2.5 rounded-xl border bg-white outline-none resize-none focus:ring-1 focus:ring-pink-400 overflow-hidden" rows="2" placeholder="描述"></textarea>
                                     </div>
                                 </div>
 
                                 <div class="border-t border-gray-200 pt-3">
                                     <div class="flex justify-between items-center mb-2">
-                                        <span class="text-xs font-bold text-gray-500">卡片設定與按鈕 ({{ slide.buttons.length }}/5)</span>
+                                        <span class="text-xs font-bold text-gray-500">設定與按鈕 ({{ slide.buttons.length }}/5)</span>
                                         <div class="flex gap-2">
-                                            <button @click="togglePalette('slideBg_' + slide.id)" class="text-[10px] bg-white border px-2 py-1 rounded font-bold text-gray-600">背景色</button>
+                                            <button @click="togglePalette('slideBg_' + slide.id)" class="text-[10px] bg-white border px-2 py-1 rounded font-bold text-gray-600 flex items-center gap-1"><span class="w-2 h-2 rounded-full border" :style="{backgroundColor: slide.bgColor || '#ffffff'}"></span> 卡片底色</button>
                                             <button v-if="slide.buttons.length < 5" @click="slide.buttons.push({text:'', url:'', color: '#ebedf0'})" class="text-[10px] bg-gray-200 px-2 py-1 rounded font-bold text-gray-700">+ 按鈕</button>
                                         </div>
                                     </div>
@@ -297,12 +297,16 @@
                                     </transition>
 
                                     <div class="space-y-2">
-                                        <div v-for="(sBtn, bIdx) in slide.buttons" :key="bIdx" class="flex flex-col gap-1 bg-white p-2 rounded-xl border">
+                                        <div v-for="(sBtn, bIdx) in slide.buttons" :key="bIdx" class="flex flex-col gap-1 bg-white p-2 rounded-xl border relative">
+                                            <div class="flex gap-1 mb-1 items-center justify-end">
+                                                <button @click="moveItem(slide.buttons, bIdx, -1)" :disabled="bIdx === 0" class="text-gray-400 hover:text-gray-700 disabled:opacity-30"><i class="ph-bold ph-caret-up"></i></button>
+                                                <button @click="moveItem(slide.buttons, bIdx, 1)" :disabled="bIdx === slide.buttons.length - 1" class="text-gray-400 hover:text-gray-700 disabled:opacity-30"><i class="ph-bold ph-caret-down"></i></button>
+                                                <button @click="slide.buttons.splice(bIdx, 1)" class="ml-2 text-red-400 hover:text-red-600"><i class="ph-fill ph-minus-circle"></i></button>
+                                            </div>
                                             <div class="flex gap-2 relative">
                                                 <input v-model="sBtn.text" class="w-1/3 text-xs p-2 rounded border bg-gray-50 outline-none" placeholder="按鈕名">
                                                 <input v-model="sBtn.url" class="flex-1 text-xs p-2 rounded border bg-gray-50 outline-none" placeholder="連結">
                                                 <button @click="togglePalette('sBtn_' + slide.id + '_' + bIdx)" class="w-8 flex items-center justify-center bg-gray-100 rounded hover:bg-gray-200"><span class="w-3 h-3 rounded-full border" :style="{backgroundColor: sBtn.color || '#ebedf0'}"></span></button>
-                                                <button @click="slide.buttons.splice(bIdx, 1)" class="w-8 flex items-center justify-center text-red-400 hover:bg-red-50 rounded"><i class="ph ph-minus-circle"></i></button>
                                             </div>
                                             <transition name="slide-down">
                                                 <div v-if="activePaletteId === 'sBtn_' + slide.id + '_' + bIdx" class="mt-1">
@@ -324,21 +328,20 @@
         </div>
       </div>
 
-      <div class="fixed sm:absolute bottom-0 w-full bg-white border-t flex justify-around p-2 z-30 shrink-0">
+      <div class="fixed sm:absolute bottom-0 w-full bg-white border-t flex justify-around p-2 z-50 shrink-0 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] rounded-b-3xl">
         <button @click="activeTab = 'profile'; activePaletteId = null;" :class="activeTab === 'profile' ? 'text-pink-600' : 'text-gray-400'" class="flex flex-col items-center p-2 font-bold text-sm"><i class="ph-fill ph-device-mobile text-2xl"></i> Profile設計</button>
         <button @click="activeTab = 'line'; activePaletteId = null;" :class="activeTab === 'line' ? 'text-purple-600' : 'text-gray-400'" class="flex flex-col items-center p-2 font-bold text-sm"><i class="ph-fill ph-chat-circle-text text-2xl"></i> LINE輪播</button>
       </div>
     </div>
 
-    <div v-show="isMediaModalOpen" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div v-show="isMediaModalOpen" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[120] flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col h-[80vh]">
-            <div class="p-5 border-b flex justify-between items-center bg-gray-50"><h2 class="font-black text-lg flex items-center gap-2"><i class="ph-fill ph-folder-open text-pink-500"></i> 專屬雲端圖庫</h2><button @click="closeMediaLibrary" class="text-gray-400 hover:text-red-500"><i class="ph ph-x text-lg"></i></button></div>
+            <div class="p-5 border-b flex justify-between items-center bg-gray-50"><h2 class="font-black text-lg flex items-center gap-2"><i class="ph-fill ph-folder-open text-pink-500"></i> 專屬雲端圖庫</h2><button @click="isMediaModalOpen = false" class="text-gray-400 hover:text-red-500"><i class="ph ph-x text-lg"></i></button></div>
             <div class="p-5 flex-1 overflow-y-auto bg-gray-100">
                 <div class="mb-6 flex gap-3">
                     <input type="file" ref="fileInput" @change="handleFileSelect" accept="image/*" class="hidden">
                     <button @click="$refs.fileInput.click()" class="flex-1 bg-white border border-gray-200 text-gray-700 font-bold py-3 rounded-xl shadow-sm hover:border-pink-500 flex justify-center items-center gap-2"><i class="ph ph-upload-simple"></i> 由裝置上傳新照片</button>
                 </div>
-                <h3 class="font-bold text-gray-500 text-sm mb-3">雲端歷史圖片 (點擊套用)</h3>
                 <div v-if="isLoadingImages" class="text-center py-10 text-gray-400 animate-pulse"><i class="ph ph-spinner animate-spin text-2xl"></i> 讀取中...</div>
                 <div v-else class="grid grid-cols-3 sm:grid-cols-4 gap-3">
                     <div v-for="img in mediaImages" :key="img.id" @click="selectImage(img.url)" class="aspect-square bg-gray-200 rounded-xl border border-gray-300 hover:border-pink-500 cursor-pointer overflow-hidden group relative">
@@ -350,7 +353,7 @@
         </div>
     </div>
 
-    <div v-show="isCropModalOpen" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] flex items-center justify-center p-4">
+    <div v-show="isCropModalOpen" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[130] flex items-center justify-center p-4">
         <div class="bg-gray-900 w-full max-w-lg rounded-3xl overflow-hidden flex flex-col shadow-2xl border border-gray-700">
             <div class="p-4 border-b border-gray-800 flex justify-between items-center text-white"><h2 class="font-bold">移動並縮放以裁切</h2><button @click="closeCropper" class="text-gray-400 hover:text-white"><i class="ph ph-x text-xl"></i></button></div>
             <div class="p-4 bg-black flex justify-center items-center min-h-[300px] max-h-[50vh] overflow-hidden"><img id="cropImageTarget" class="max-w-full block"></div>
@@ -366,16 +369,17 @@
   </div>
 
   <script>
-    const { createApp, ref, onMounted, nextTick } = Vue;
+    const { createApp, ref, onMounted, nextTick, watch } = Vue;
 
     createApp({
       setup() {
         const currentView = ref('login'); 
         const activeTab = ref('profile'); 
         const currentUser = ref(null);
+        
         const mobileViewModeProfile = ref('edit'); 
         const mobileViewModeSlide = ref('edit');
-        const activePaletteId = ref(null); // 控制全局唯一開啟的調色盤
+        const activePaletteId = ref(null); 
         
         const loginForm = ref({ email: '', password: '' });
         const regForm = ref({ name: '', email: '' });
@@ -389,21 +393,20 @@
         
         const confirmModal = ref({ show: false, title: '', message: '', pendingAction: null });
         const requestDelete = (type, id, index, titleName) => {
-            confirmModal.value = { show: true, title: '確認徹底刪除？', message: `刪除「${titleName || '未命名'}」無法復原並會立即同步。`, pendingAction: () => executeActualDelete(type, id, index) };
+            confirmModal.value = { show: true, title: '確認徹底刪除？', message: `刪除「${titleName || '未命名'}」無法復原並會同步。`, pendingAction: () => executeActualDelete(type, id, index) };
         };
         const executeConfirm = () => { if(confirmModal.value.pendingAction) confirmModal.value.pendingAction(); confirmModal.value.show = false; };
 
         const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzFIevyKloCU9wbGMUdAES-BKIr9KxXVUZgfIfRJmrWlZnBR6QuE9kIcESvbATzW0t4bw/exec';
         
-        // 🌟 5階同色系漸層 (5 column x 7 rows)
         const colorMatrix = ref([
-            ['#fef2f2', '#fca5a5', '#ef4444', '#b91c1c', '#7f1d1d'], // Red
-            ['#fff7ed', '#fdba74', '#f97316', '#c2410c', '#7c2d12'], // Orange
-            ['#fefce8', '#fde047', '#eab308', '#a16207', '#713f12'], // Yellow
-            ['#f0fdf4', '#86efac', '#22c55e', '#15803d', '#14532d'], // Green
-            ['#eff6ff', '#7dd3fc', '#0ea5e9', '#0369a1', '#0c4a6e'], // Blue
-            ['#fdf2f8', '#f9a8d4', '#ec4899', '#be185d', '#831843'], // Pink
-            ['#f9fafb', '#d1d5db', '#6b7280', '#1f2937', '#000000']  // Gray
+            ['#fef2f2', '#fca5a5', '#ef4444', '#b91c1c', '#7f1d1d'], 
+            ['#fff7ed', '#fdba74', '#f97316', '#c2410c', '#7c2d12'], 
+            ['#fefce8', '#fde047', '#eab308', '#a16207', '#713f12'], 
+            ['#f0fdf4', '#86efac', '#22c55e', '#15803d', '#14532d'], 
+            ['#eff6ff', '#7dd3fc', '#0ea5e9', '#0369a1', '#0c4a6e'], 
+            ['#fdf2f8', '#f9a8d4', '#ec4899', '#be185d', '#831843'], 
+            ['#f9fafb', '#d1d5db', '#6b7280', '#1f2937', '#000000']  
         ]);
 
         const profile = ref({ avatarUrl: '', name: '', bio: '', bgColor: '#FDF2F8' });
@@ -416,7 +419,6 @@
         const currentUploadContext = ref('');
         const currentButtonIndex = ref(null);
         
-        // 🌟 圖片快取，不重複載入
         const profileImagesCache = ref([]);
         const slideImagesCache = ref([]);
         const hasLoadedProfileImages = ref(false);
@@ -431,6 +433,11 @@
           catch (e) { showToast('網路異常', 'error'); throw e; }
         };
 
+        const autoResize = (id) => { 
+            const el = document.getElementById(id); 
+            if(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } 
+        };
+
         const loadDashboardData = async () => {
             isFetchingData.value = true;
             try {
@@ -440,7 +447,12 @@
                 if(bRes.status === 'success') buttons.value = bRes.data;
                 const sRes = await apiCall({ action: 'getSlides', memberId: currentUser.value.memberId });
                 if(sRes.status === 'success') slides.value = sRes.data;
-                nextTick(() => { autoResize('bio-textarea'); autoResize('bio-textarea-edit'); }); 
+                
+                nextTick(() => { 
+                    autoResize('bio-textarea'); 
+                    autoResize('bio-textarea-edit'); 
+                    slides.value.forEach(s => autoResize('desc_'+s.id));
+                }); 
             } catch (e) { showToast('載入失敗', 'error'); } 
             finally { isFetchingData.value = false; }
         };
@@ -468,13 +480,11 @@
         };
 
         const logout = () => { localStorage.removeItem('ruby_user'); currentView.value = 'login'; currentUser.value = null; showToast('已安全登出'); };
-        
         const moveItem = (arr, index, dir) => { const nIdx = index + dir; if (nIdx < 0 || nIdx >= arr.length) return; const temp = arr[index]; arr[index] = arr[nIdx]; arr[nIdx] = temp; };
-        const autoResize = (id) => { const el = document.getElementById(id); if(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } };
         const togglePalette = (id) => { activePaletteId.value = activePaletteId.value === id ? null : id; };
         
-        const addNewButton = () => { buttons.value.push({ id: Date.now().toString(), title: '', url: '', color: '#ffffff', iconUrl: '' }); nextTick(()=>{document.querySelector('.overflow-y-auto').scrollTop = 9999;}); };
-        const addNewSlide = () => { slides.value.push({ id: Date.now().toString(), sort: slides.value.length + 1, imageUrl: '', title: '', description: '', buttons: [] }); nextTick(() => { document.querySelector('.line-carousel-container').scrollLeft = 9999; }); };
+        const addNewButton = () => { buttons.value.push({ id: Date.now().toString(), title: '', url: '', color: '#ffffff', iconUrl: '' }); nextTick(()=>{ window.scrollTo(0, document.body.scrollHeight); }); };
+        const addNewSlide = () => { slides.value.push({ id: Date.now().toString(), sort: slides.value.length + 1, imageUrl: '', title: '', description: '', buttons: [] }); nextTick(() => { window.scrollTo(0, document.body.scrollHeight); }); };
 
         const saveAllData = async () => {
             isSaving.value = true; activePaletteId.value = null;
@@ -505,7 +515,6 @@
             const isProfileContext = context === 'avatar' || context === 'buttonIcon';
             const targetFolderId = isProfileContext ? currentUser.value.profileFolderId : currentUser.value.slideFolderId;
             
-            // 🌟 檢查快取
             if (isProfileContext && hasLoadedProfileImages.value) { mediaImages.value = profileImagesCache.value; isMediaModalOpen.value = true; return; }
             if (!isProfileContext && hasLoadedSlideImages.value) { mediaImages.value = slideImagesCache.value; isMediaModalOpen.value = true; return; }
 
@@ -567,7 +576,6 @@
                 if(res.status === 'success') {
                     showToast('雲端儲存成功！');
                     const newImg = { id: res.id, url: res.fileUrl, name: res.name };
-                    // 更新對應快取
                     if (currentUploadContext.value === 'slide') slideImagesCache.value.unshift(newImg);
                     else profileImagesCache.value.unshift(newImg);
                     mediaImages.value.unshift(newImg);
