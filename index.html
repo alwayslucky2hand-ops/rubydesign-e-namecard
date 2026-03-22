@@ -23,23 +23,21 @@
     .line-carousel-container { display: flex; gap: 10px; overflow-x: auto; padding: 20px 15px; scroll-snap-type: x mandatory;}
     .line-card { min-width: 260px; max-width: 260px; background: white; border-radius: 16px; overflow: hidden; scroll-snap-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; flex-direction: column;}
     
-    /* 動畫 */
     .toast-enter-active, .toast-leave-active { transition: all 0.5s ease; }
     .toast-enter-from, .toast-leave-to { opacity: 0; transform: translate(-50%, -20px); }
     .toast-enter-to, .toast-leave-from { opacity: 1; transform: translate(-50%, 0); }
-    
     .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
     .fade-enter-from, .fade-leave-to { opacity: 0; }
-    
     .slide-down-enter-active, .slide-down-leave-active { transition: all 0.3s ease; }
     .slide-down-enter-from, .slide-down-leave-to { opacity: 0; transform: translateY(-10px); }
 
     .cropper-view-box, .cropper-face { border-radius: 50%; }
 
-    /* 🌟 同色系漸層 20x20 矩陣 */
-    .color-grid-matrix { display: grid; grid-template-columns: repeat(9, 1fr); gap: 6px; margin-top: 10px;}
-    .color-swatch { width: 20px; height: 20px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s;}
-    .color-swatch:hover { transform: scale(1.2); z-index: 10;}
+    /* 🌟 5階同色系漸層 20x20 矩陣 */
+    .color-grid-matrix { display: flex; flex-direction: column; gap: 6px; margin-top: 10px;}
+    .color-row { display: flex; gap: 6px; justify-content: space-between; }
+    .color-swatch { width: 22px; height: 22px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s;}
+    .color-swatch:hover { transform: scale(1.3); z-index: 10; box-shadow: 0 4px 6px rgba(0,0,0,0.2);}
     .icolor-wheel { background: conic-gradient(#f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00); }
   </style>
 </head>
@@ -81,32 +79,31 @@
     <div v-if="currentView === 'register'" class="w-full max-w-md p-8 sm:rounded-3xl shadow-2xl glass-panel">
         <h1 class="text-3xl font-black text-center text-gray-900 mb-6">系統申請開通</h1>
         <form @submit.prevent="handleRegister" class="space-y-4">
-            <input v-model="regForm.name" type="text" required placeholder="姓名 / 品牌名稱" class="w-full p-4 rounded-xl border outline-none">
-            <input v-model="regForm.email" type="email" required placeholder="聯絡信箱" class="w-full p-4 rounded-xl border outline-none">
-            <button type="submit" :disabled="isLoading" class="w-full bg-gray-900 hover:bg-black transition text-white p-4 rounded-xl font-bold flex justify-center items-center gap-2"><i v-if="isLoading" class="ph ph-spinner animate-spin"></i> 確認申請並取得帳號</button>
+            <input v-model="regForm.name" type="text" required placeholder="姓名 / 品牌名稱" class="w-full p-4 rounded-xl border outline-none focus:ring-2 focus:ring-pink-400">
+            <input v-model="regForm.email" type="email" required placeholder="聯絡信箱" class="w-full p-4 rounded-xl border outline-none focus:ring-2 focus:ring-pink-400">
+            <button type="submit" :disabled="isLoading" class="w-full bg-gray-900 hover:bg-black transition text-white p-4 rounded-xl font-bold flex justify-center items-center gap-2"><i v-if="isLoading" class="ph ph-spinner animate-spin"></i> 確認申請</button>
         </form>
         <p v-if="isRegSuccess" class="mt-4 text-green-600 text-sm font-bold text-center">✅ 申請成功！請至 Email 收取密碼。</p>
-        <div class="mt-6 text-center text-sm">已經有帳號了？ <a href="#" @click.prevent="currentView = 'login'" class="text-pink-600 font-bold hover:underline">返回登入</a></div>
+        <div class="mt-6 text-center text-sm"><a href="#" @click.prevent="currentView = 'login'" class="text-pink-600 font-bold hover:underline">返回登入</a></div>
     </div>
 
     <div v-if="currentView === 'dashboard' && currentUser" class="w-full sm:max-w-7xl h-screen sm:h-[90vh] flex flex-col sm:rounded-3xl shadow-2xl bg-gray-50 overflow-hidden relative">
       
-      <div class="flex justify-between items-center p-4 sm:p-5 bg-white border-b sticky top-0 z-20 shadow-sm">
+      <div class="flex justify-between items-center p-4 sm:p-5 bg-white border-b sticky top-0 z-20 shadow-sm shrink-0">
         <h1 class="text-base sm:text-lg font-black">Ruby.Brand.Design <span class="text-sm font-normal text-gray-500 hidden sm:inline-block">| {{ currentUser.name }}</span></h1>
         <button @click="logout" class="text-gray-400 font-bold hover:bg-gray-100 p-2 rounded-lg transition flex items-center gap-1"><i class="ph ph-sign-out text-xl"></i> <span class="hidden sm:inline">登出</span></button>
       </div>
 
-      <div class="p-4 sm:p-8 flex-1 overflow-y-auto no-scrollbar pb-24 sm:pb-8 relative">
+      <div class="p-4 sm:p-8 flex-1 overflow-y-auto no-scrollbar pb-40 relative">
         <div v-if="isFetchingData" class="absolute inset-0 bg-white/80 z-10 flex flex-col items-center justify-center backdrop-blur-sm">
-            <i class="ph ph-spinner animate-spin text-4xl text-pink-500 mb-2"></i><p class="text-gray-500 font-bold text-sm">正在載入專屬資料...</p>
+            <i class="ph ph-spinner animate-spin text-4xl text-pink-500 mb-2"></i><p class="text-gray-500 font-bold text-sm">載入專屬資料...</p>
         </div>
 
         <div v-show="activeTab === 'profile'" class="w-full">
-            
             <div class="flex lg:hidden bg-gray-200 p-1 rounded-xl w-full max-w-[240px] mx-auto mb-6 relative">
                 <div class="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-lg shadow transition-transform duration-300" :class="mobileViewModeProfile === 'preview' ? 'translate-x-0' : 'translate-x-[calc(100%+8px)]'"></div>
-                <button @click="mobileViewModeProfile = 'preview'" class="flex-1 py-2 text-sm font-bold z-10 transition-colors" :class="mobileViewModeProfile === 'preview' ? 'text-gray-900' : 'text-gray-500'">預覽區</button>
-                <button @click="mobileViewModeProfile = 'edit'" class="flex-1 py-2 text-sm font-bold z-10 transition-colors" :class="mobileViewModeProfile === 'edit' ? 'text-gray-900' : 'text-gray-500'">編輯區</button>
+                <button @click="mobileViewModeProfile = 'preview'" class="flex-1 py-2 text-sm font-bold z-10" :class="mobileViewModeProfile === 'preview' ? 'text-gray-900' : 'text-gray-500'">預覽區</button>
+                <button @click="mobileViewModeProfile = 'edit'" class="flex-1 py-2 text-sm font-bold z-10" :class="mobileViewModeProfile === 'edit' ? 'text-gray-900' : 'text-gray-500'">編輯區</button>
             </div>
 
             <div class="flex flex-col lg:flex-row gap-8 justify-center items-start">
@@ -118,13 +115,11 @@
                             <img :src="profile.avatarUrl || 'https://via.placeholder.com/150'" class="w-28 h-28 rounded-full object-cover border-4 border-white shadow-lg bg-gray-100">
                         </div>
                         <div class="text-xl font-black text-center mb-2 text-gray-900">{{ profile.name || '顯示名稱' }}</div>
-                        <div class="text-sm text-center text-gray-600 whitespace-pre-wrap leading-relaxed">{{ profile.bio || '尚未填寫自介' }}</div>
+                        <div class="text-sm text-center text-gray-600 whitespace-pre-wrap leading-relaxed w-full break-words">{{ profile.bio || '尚未填寫自介' }}</div>
 
                         <div class="w-full mt-6 space-y-3">
                             <div v-for="btn in buttons" :key="btn.id" class="w-full rounded-2xl shadow-sm flex items-center gap-3 px-3 py-3 border border-gray-200" :style="{ backgroundColor: btn.color || '#ffffff' }">
-                                <div class="w-10 h-10 rounded-xl bg-white/50 flex items-center justify-center overflow-hidden border border-gray-300/50 shrink-0">
-                                    <img v-if="btn.iconUrl" :src="btn.iconUrl" class="w-full h-full object-cover"><i v-else class="ph ph-link text-gray-800"></i>
-                                </div>
+                                <div class="w-10 h-10 rounded-xl bg-white/50 flex items-center justify-center overflow-hidden shrink-0"><img v-if="btn.iconUrl" :src="btn.iconUrl" class="w-full h-full object-cover"><i v-else class="ph ph-link text-gray-800"></i></div>
                                 <div class="flex-1 font-bold text-gray-800 text-center pr-10 truncate">{{ btn.title || '按鈕文字' }}</div>
                             </div>
                         </div>
@@ -136,34 +131,46 @@
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-6">
                         <h3 class="font-black text-lg mb-4 text-gray-800 border-b pb-2 flex items-center justify-between">
                             <span>個人資料編輯</span>
-                            <div class="flex items-center gap-2">
-                                <span class="text-[10px] font-mono bg-gray-100 px-2 py-1 rounded text-gray-500">{{ profile.bgColor.toUpperCase() }}</span>
-                                <div class="relative w-6 h-6 rounded-full cursor-pointer icolor-wheel border border-gray-300 shadow-sm"><input type="color" v-model="profile.bgColor" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"></div>
-                            </div>
+                            <button @click="togglePalette('profileBg')" class="text-[10px] font-mono bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg text-gray-600 transition flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full border border-gray-300" :style="{backgroundColor: profile.bgColor}"></span> 換背景色
+                            </button>
                         </h3>
                         
+                        <transition name="slide-down">
+                            <div v-if="activePaletteId === 'profileBg'" class="mb-5 bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-inner">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-xs font-bold text-gray-500">選擇漸層背景色</span>
+                                    <div class="relative w-6 h-6 rounded-full cursor-pointer icolor-wheel border border-gray-300 shadow-sm"><input type="color" v-model="profile.bgColor" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"></div>
+                                </div>
+                                <div class="color-grid-matrix">
+                                    <div v-for="(row, rIdx) in colorMatrix" :key="rIdx" class="color-row">
+                                        <button v-for="c in row" :key="c" @click="profile.bgColor = c" class="color-swatch" :class="{'ring-2 ring-gray-800': profile.bgColor === c}" :style="{ backgroundColor: c }"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </transition>
+
                         <div class="flex gap-4 mb-4">
                             <div @click="openMediaLibrary('avatar')" class="w-20 h-20 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer relative overflow-hidden group shrink-0">
                                 <img v-if="profile.avatarUrl" :src="profile.avatarUrl" class="w-full h-full object-cover">
-                                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="ph ph-camera text-xl"></i></div>
+                                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white"><i class="ph ph-camera text-xl"></i></div>
                             </div>
                             <div class="flex-1 flex flex-col justify-center">
                                 <label class="text-xs font-bold text-gray-500 mb-1">顯示名稱</label>
-                                <input v-model="profile.name" class="w-full text-sm font-bold p-2.5 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-pink-400 bg-gray-50" placeholder="輸入您的名稱">
+                                <input v-model="profile.name" class="w-full text-sm font-bold p-2.5 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-pink-400 bg-gray-50" placeholder="輸入名稱">
                             </div>
                         </div>
-                        
-                        <label class="text-xs font-bold text-gray-500 mb-1 block">自我介紹 (自動換行)</label>
-                        <textarea id="bio-textarea-edit" v-model="profile.bio" @input="autoResize('bio-textarea-edit')" class="w-full text-sm p-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-pink-400 bg-gray-50 resize-none overflow-hidden" rows="2" placeholder="寫一段簡短的介紹..."></textarea>
+                        <label class="text-xs font-bold text-gray-500 mb-1 block">自我介紹</label>
+                        <textarea id="bio-textarea-edit" v-model="profile.bio" @input="autoResize('bio-textarea-edit')" class="w-full text-sm p-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-pink-400 bg-gray-50 resize-none overflow-hidden" rows="2" placeholder="介紹..."></textarea>
                     </div>
 
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-6">
                         <div class="flex justify-between items-center border-b pb-2 mb-4">
-                            <h3 class="font-black text-lg text-gray-800">按鈕與連結管理</h3>
-                            <button @click="addNewButton" class="text-pink-600 font-bold text-xs bg-pink-50 px-3 py-1.5 rounded-lg hover:bg-pink-100"><i class="ph ph-plus"></i> 新增按鈕</button>
+                            <h3 class="font-black text-lg text-gray-800">按鈕管理</h3>
+                            <button @click="addNewButton" class="text-pink-600 font-bold text-xs bg-pink-50 px-3 py-1.5 rounded-lg"><i class="ph ph-plus"></i> 新增</button>
                         </div>
                         
-                        <div class="space-y-4 max-h-[400px] overflow-y-auto no-scrollbar pr-1">
+                        <div class="space-y-4">
                             <div v-for="(btn, index) in buttons" :key="btn.id" class="p-4 bg-gray-50 border border-gray-200 rounded-2xl relative">
                                 <div class="absolute right-3 top-3 flex gap-1">
                                     <button @click="moveItem(buttons, index, -1)" :disabled="index === 0" class="p-1 bg-white rounded shadow-sm text-gray-500 disabled:opacity-30"><i class="ph ph-arrow-up"></i></button>
@@ -172,32 +179,33 @@
                                 </div>
 
                                 <div class="flex gap-3 mb-2 pr-20">
-                                    <div @click="openMediaLibrary('buttonIcon', index)" class="w-12 h-12 rounded-xl bg-white border border-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-100 overflow-hidden shrink-0 relative group">
-                                        <img v-if="btn.iconUrl" :src="btn.iconUrl" class="w-full h-full object-cover">
-                                        <i v-else class="ph ph-image text-gray-400 text-xl"></i>
-                                        <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-bold">更換</div>
+                                    <div @click="openMediaLibrary('buttonIcon', index)" class="w-12 h-12 rounded-xl bg-white border border-gray-200 flex items-center justify-center cursor-pointer overflow-hidden shrink-0 group relative">
+                                        <img v-if="btn.iconUrl" :src="btn.iconUrl" class="w-full h-full object-cover"><i v-else class="ph ph-image text-gray-400 text-xl"></i>
+                                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-bold">更換</div>
                                     </div>
                                     <div class="flex-1 space-y-2">
-                                        <input v-model="btn.title" class="w-full text-sm font-bold px-3 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-pink-400 bg-white" placeholder="按鈕文字">
-                                        <input v-model="btn.url" class="w-full text-xs px-3 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-pink-400 bg-white" placeholder="連結 https://...">
+                                        <input v-model="btn.title" class="w-full text-sm font-bold px-3 py-2 rounded-lg border outline-none bg-white" placeholder="文字">
+                                        <input v-model="btn.url" class="w-full text-xs px-3 py-2 rounded-lg border outline-none bg-white" placeholder="連結">
                                     </div>
                                 </div>
                                 
                                 <div class="pt-2 border-t border-gray-200">
                                     <div class="flex justify-between items-center">
-                                        <div class="text-xs font-bold text-gray-500 flex items-center gap-1"><i class="ph-fill ph-cursor-click"></i> {{ btn.clicks || 0 }} 次點擊</div>
-                                        <button @click="activePaletteId = activePaletteId === btn.id ? null : btn.id" class="text-xs font-bold bg-white border border-gray-200 px-3 py-1.5 rounded-lg flex items-center gap-2 hover:bg-gray-100 transition">
-                                            <span class="w-3 h-3 rounded-full border border-gray-300 inline-block" :style="{backgroundColor: btn.color}"></span> 選擇顏色
+                                        <span class="text-xs font-bold text-gray-500 flex items-center gap-1"><i class="ph-fill ph-cursor-click"></i> {{ btn.clicks || 0 }} 點擊</span>
+                                        <button @click="togglePalette('btn_' + btn.id)" class="text-xs font-bold bg-white border border-gray-200 px-3 py-1.5 rounded-lg flex items-center gap-2">
+                                            <span class="w-3 h-3 rounded-full border border-gray-300" :style="{backgroundColor: btn.color}"></span> 按鈕顏色
                                         </button>
                                     </div>
                                     <transition name="slide-down">
-                                        <div v-if="activePaletteId === btn.id" class="mt-3 bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
+                                        <div v-if="activePaletteId === 'btn_' + btn.id" class="mt-3 bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
                                             <div class="flex justify-between items-center mb-2">
-                                                <span class="text-[10px] font-mono text-gray-400">自訂 RGB:</span>
-                                                <div class="relative w-5 h-5 rounded-full cursor-pointer icolor-wheel border border-gray-300 shadow-sm"><input type="color" v-model="btn.color" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"></div>
+                                                <span class="text-[10px] font-bold text-gray-400">漸層色系</span>
+                                                <div class="relative w-5 h-5 rounded-full cursor-pointer icolor-wheel"><input type="color" v-model="btn.color" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"></div>
                                             </div>
                                             <div class="color-grid-matrix">
-                                                <div v-for="c in colorMatrix" :key="c" @click="btn.color = c" class="color-swatch" :style="{ backgroundColor: c }"></div>
+                                                <div v-for="(row, rIdx) in colorMatrix" :key="rIdx" class="color-row">
+                                                    <button v-for="c in row" :key="c" @click="btn.color = c" class="color-swatch" :class="{'ring-1 ring-gray-800': btn.color === c}" :style="{ backgroundColor: c }"></button>
+                                                </div>
                                             </div>
                                         </div>
                                     </transition>
@@ -205,7 +213,6 @@
                             </div>
                         </div>
                     </div>
-
                     <button @click="saveAllData" class="w-full bg-gray-900 text-white font-bold py-4 rounded-xl hover:bg-black transition flex justify-center items-center gap-2 shadow-lg">
                         <i v-if="isSaving" class="ph ph-spinner animate-spin"></i> {{ isSaving ? '同步中...' : '儲存變更至前台' }}
                     </button>
@@ -217,8 +224,8 @@
             
             <div class="flex lg:hidden bg-gray-200 p-1 rounded-xl w-full max-w-[240px] mx-auto mb-6 relative">
                 <div class="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-lg shadow transition-transform duration-300" :class="mobileViewModeSlide === 'preview' ? 'translate-x-0' : 'translate-x-[calc(100%+8px)]'"></div>
-                <button @click="mobileViewModeSlide = 'preview'" class="flex-1 py-2 text-sm font-bold z-10 transition-colors" :class="mobileViewModeSlide === 'preview' ? 'text-gray-900' : 'text-gray-500'">預覽區</button>
-                <button @click="mobileViewModeSlide = 'edit'" class="flex-1 py-2 text-sm font-bold z-10 transition-colors" :class="mobileViewModeSlide === 'edit' ? 'text-gray-900' : 'text-gray-500'">編輯區</button>
+                <button @click="mobileViewModeSlide = 'preview'" class="flex-1 py-2 text-sm font-bold z-10" :class="mobileViewModeSlide === 'preview' ? 'text-gray-900' : 'text-gray-500'">預覽區</button>
+                <button @click="mobileViewModeSlide = 'edit'" class="flex-1 py-2 text-sm font-bold z-10" :class="mobileViewModeSlide === 'edit' ? 'text-gray-900' : 'text-gray-500'">編輯區</button>
             </div>
 
             <div class="flex flex-col lg:flex-row gap-8 justify-center items-start">
@@ -227,9 +234,9 @@
                     <div class="mockup-notch"></div>
                     <div class="line-header"><i class="ph ph-caret-left text-xl"></i> Ruby.Brand.Design</div>
                     <div class="flex-1 overflow-y-auto no-scrollbar pb-6 flex flex-col justify-end">
-                        <div v-if="slides.length === 0" class="text-center text-white/50 text-sm mt-10">尚無輪播卡片，請從編輯區新增</div>
+                        <div v-if="slides.length === 0" class="text-center text-white/50 text-sm mt-10">尚無卡片，請從編輯區新增</div>
                         <div class="line-carousel-container no-scrollbar">
-                            <div v-for="slide in slides" :key="slide.id" class="line-card flex flex-col flex-shrink-0 pb-2">
+                            <div v-for="slide in slides" :key="slide.id" class="line-card flex flex-col shrink-0 pb-2" :style="{ backgroundColor: slide.bgColor || '#ffffff' }">
                                 <div class="h-40 bg-gray-200 relative shrink-0 border-b border-gray-100">
                                     <img v-if="slide.imageUrl" :src="slide.imageUrl" class="w-full h-full object-cover">
                                     <div v-else class="w-full h-full flex items-center justify-center text-gray-400"><i class="ph ph-image text-3xl"></i></div>
@@ -239,7 +246,7 @@
                                     <p class="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">{{ slide.description || '描述內容文字...' }}</p>
                                 </div>
                                 <div class="flex flex-col gap-1 px-3">
-                                    <div v-for="(sBtn, bIdx) in slide.buttons" :key="bIdx" class="bg-gray-100/50 rounded-lg p-2.5 text-center text-sm font-bold text-[#1a5eb2]">
+                                    <div v-for="(sBtn, bIdx) in slide.buttons" :key="bIdx" class="rounded-lg p-2.5 text-center text-sm font-bold" :style="{ backgroundColor: sBtn.color || '#ebedf0', color: sBtn.color && sBtn.color !== '#ebedf0' && sBtn.color !== '#ffffff' ? '#ffffff' : '#1a5eb2' }">
                                         {{ sBtn.text || '按鈕名稱' }}
                                     </div>
                                 </div>
@@ -248,70 +255,90 @@
                     </div>
                 </div>
 
-                <div class="w-full lg:w-[500px] bg-white p-6 rounded-3xl shadow-sm border border-gray-100" :class="{'hidden lg:block': mobileViewModeSlide === 'preview'}">
-                    <div class="flex justify-between items-center mb-4 border-b pb-4">
-                        <h3 class="font-black text-lg text-gray-800">LINE 輪播卡片編輯</h3>
-                        <button @click="addNewSlide" class="text-pink-600 font-bold text-sm bg-pink-50 px-4 py-2 rounded-lg hover:bg-pink-100 transition"><i class="ph ph-plus"></i> 新增卡片</button>
-                    </div>
-                    
-                    <div class="space-y-6 max-h-[550px] overflow-y-auto pr-2 no-scrollbar">
-                        <div v-for="(slide, index) in slides" :key="slide.id" class="bg-gray-50 border border-gray-200 p-5 rounded-2xl relative">
-                            <div class="absolute right-3 top-3 flex gap-2 z-10">
-                                <button @click="moveItem(slides, index, -1)" :disabled="index === 0" class="p-1.5 bg-white rounded-lg shadow-sm text-gray-500 disabled:opacity-30"><i class="ph ph-arrow-up"></i></button>
-                                <button @click="moveItem(slides, index, 1)" :disabled="index === slides.length - 1" class="p-1.5 bg-white rounded-lg shadow-sm text-gray-500 disabled:opacity-30"><i class="ph ph-arrow-down"></i></button>
-                                <button @click="requestDelete('slide', slide.id, index, slide.title)" class="p-1.5 bg-red-50 hover:bg-red-100 rounded-lg shadow-sm text-red-500 transition"><i class="ph ph-trash"></i></button>
-                            </div>
+                <div class="w-full lg:w-[500px]" :class="{'hidden lg:block': mobileViewModeSlide === 'preview'}">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-center border-b pb-2 mb-4">
+                            <h3 class="font-black text-lg text-gray-800">輪播卡片管理</h3>
+                            <button @click="addNewSlide" class="text-pink-600 font-bold text-xs bg-pink-50 px-3 py-1.5 rounded-lg"><i class="ph ph-plus"></i> 新增</button>
+                        </div>
+                        
+                        <div class="space-y-6 max-h-[500px] overflow-y-auto pr-2 no-scrollbar">
+                            <div v-for="(slide, index) in slides" :key="slide.id" class="bg-gray-50 border border-gray-200 p-4 rounded-2xl relative">
+                                <div class="absolute right-3 top-3 flex gap-1 z-10">
+                                    <button @click="moveItem(slides, index, -1)" :disabled="index === 0" class="p-1 bg-white rounded shadow-sm text-gray-500"><i class="ph ph-arrow-up"></i></button>
+                                    <button @click="moveItem(slides, index, 1)" :disabled="index === slides.length - 1" class="p-1 bg-white rounded shadow-sm text-gray-500"><i class="ph ph-arrow-down"></i></button>
+                                    <button @click="requestDelete('slide', slide.id, index, slide.title)" class="p-1 bg-red-50 text-red-500 rounded shadow-sm"><i class="ph ph-trash"></i></button>
+                                </div>
 
-                            <div class="flex flex-col sm:flex-row gap-4 mb-4 mt-2">
-                                <div @click="openMediaLibrary('slide', index)" class="w-full sm:w-28 h-28 bg-white border border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-pink-50 overflow-hidden flex-shrink-0 transition">
-                                    <img v-if="slide.imageUrl" :src="slide.imageUrl" class="w-full h-full object-cover">
-                                    <div v-else class="text-center text-gray-400"><i class="ph ph-upload-simple text-2xl"></i><p class="text-[10px] mt-1 font-bold">原圖上傳</p></div>
+                                <div class="flex flex-col sm:flex-row gap-4 mb-3 mt-2">
+                                    <div @click="openMediaLibrary('slide', index)" class="w-full sm:w-24 h-24 bg-white border border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer hover:bg-pink-50 overflow-hidden shrink-0">
+                                        <img v-if="slide.imageUrl" :src="slide.imageUrl" class="w-full h-full object-cover"><div v-else class="text-center text-gray-400"><i class="ph ph-upload-simple text-xl"></i></div>
+                                    </div>
+                                    <div class="flex-1 space-y-2">
+                                        <input v-model="slide.title" class="w-full text-sm font-bold p-2.5 rounded-xl border bg-white outline-none focus:ring-1 focus:ring-pink-400" placeholder="標題">
+                                        <textarea v-model="slide.description" class="w-full text-xs p-2.5 rounded-xl border bg-white outline-none resize-none focus:ring-1 focus:ring-pink-400" rows="2" placeholder="描述"></textarea>
+                                    </div>
                                 </div>
-                                <div class="flex-1 space-y-3">
-                                    <input v-model="slide.title" class="w-full text-sm font-bold p-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-pink-400 bg-white" placeholder="大標題">
-                                    <textarea v-model="slide.description" class="w-full text-sm p-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-pink-400 resize-none bg-white" rows="2" placeholder="詳細描述"></textarea>
-                                </div>
-                            </div>
 
-                            <div class="border-t border-gray-200 pt-3">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="text-xs font-bold text-gray-500">互動按鈕 (目前 {{ slide.buttons.length }}/5 組)</span>
-                                    <button v-if="slide.buttons.length < 5" @click="slide.buttons.push({text:'', url:''})" class="text-[10px] bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded font-bold text-gray-700 transition">+ 加入按鈕</button>
-                                </div>
-                                <div class="space-y-2">
-                                    <div v-for="(sBtn, bIdx) in slide.buttons" :key="bIdx" class="flex gap-2 relative">
-                                        <input v-model="sBtn.text" class="w-1/3 text-xs p-2.5 rounded-lg border outline-none bg-white" placeholder="按鈕名稱">
-                                        <input v-model="sBtn.url" class="flex-1 text-xs p-2.5 rounded-lg border outline-none bg-white" placeholder="跳轉連結 https://...">
-                                        <button @click="slide.buttons.splice(bIdx, 1)" class="w-8 flex items-center justify-center text-red-400 hover:bg-red-50 rounded-lg"><i class="ph ph-minus-circle"></i></button>
+                                <div class="border-t border-gray-200 pt-3">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-xs font-bold text-gray-500">卡片設定與按鈕 ({{ slide.buttons.length }}/5)</span>
+                                        <div class="flex gap-2">
+                                            <button @click="togglePalette('slideBg_' + slide.id)" class="text-[10px] bg-white border px-2 py-1 rounded font-bold text-gray-600">背景色</button>
+                                            <button v-if="slide.buttons.length < 5" @click="slide.buttons.push({text:'', url:'', color: '#ebedf0'})" class="text-[10px] bg-gray-200 px-2 py-1 rounded font-bold text-gray-700">+ 按鈕</button>
+                                        </div>
+                                    </div>
+
+                                    <transition name="slide-down">
+                                        <div v-if="activePaletteId === 'slideBg_' + slide.id" class="mb-3 bg-white p-3 rounded-xl border shadow-sm">
+                                            <div class="flex justify-between items-center mb-2"><span class="text-[10px] font-bold text-gray-400">卡片背景色</span><div class="relative w-5 h-5 rounded-full cursor-pointer icolor-wheel"><input type="color" v-model="slide.bgColor" class="absolute inset-0 w-full h-full opacity-0"></div></div>
+                                            <div class="color-grid-matrix"><div v-for="(row, rIdx) in colorMatrix" :key="rIdx" class="color-row"><button v-for="c in row" :key="c" @click="slide.bgColor = c" class="color-swatch" :style="{ backgroundColor: c }"></button></div></div>
+                                        </div>
+                                    </transition>
+
+                                    <div class="space-y-2">
+                                        <div v-for="(sBtn, bIdx) in slide.buttons" :key="bIdx" class="flex flex-col gap-1 bg-white p-2 rounded-xl border">
+                                            <div class="flex gap-2 relative">
+                                                <input v-model="sBtn.text" class="w-1/3 text-xs p-2 rounded border bg-gray-50 outline-none" placeholder="按鈕名">
+                                                <input v-model="sBtn.url" class="flex-1 text-xs p-2 rounded border bg-gray-50 outline-none" placeholder="連結">
+                                                <button @click="togglePalette('sBtn_' + slide.id + '_' + bIdx)" class="w-8 flex items-center justify-center bg-gray-100 rounded hover:bg-gray-200"><span class="w-3 h-3 rounded-full border" :style="{backgroundColor: sBtn.color || '#ebedf0'}"></span></button>
+                                                <button @click="slide.buttons.splice(bIdx, 1)" class="w-8 flex items-center justify-center text-red-400 hover:bg-red-50 rounded"><i class="ph ph-minus-circle"></i></button>
+                                            </div>
+                                            <transition name="slide-down">
+                                                <div v-if="activePaletteId === 'sBtn_' + slide.id + '_' + bIdx" class="mt-1">
+                                                    <div class="color-grid-matrix"><div v-for="(row, rIdx) in colorMatrix" :key="rIdx" class="color-row"><button v-for="c in row" :key="c" @click="sBtn.color = c" class="color-swatch w-4 h-4" :style="{ backgroundColor: c }"></button></div></div>
+                                                </div>
+                                            </transition>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <button @click="saveSlidesData" class="w-full mt-4 bg-purple-600 text-white font-bold py-4 rounded-xl hover:bg-purple-700 transition flex justify-center items-center gap-2 shadow-lg">
+                            <i v-if="isSaving" class="ph ph-spinner animate-spin"></i> {{ isSaving ? '發佈中...' : '儲存並同步至 LINE' }}
+                        </button>
                     </div>
-
-                    <button @click="saveSlidesData" class="w-full mt-6 bg-purple-600 text-white font-bold py-4 rounded-xl hover:bg-purple-700 transition flex justify-center items-center gap-2 shadow-lg">
-                        <i v-if="isSaving" class="ph ph-spinner animate-spin"></i> {{ isSaving ? '發佈中...' : '儲存並同步至 LINE' }}
-                    </button>
                 </div>
             </div>
-        </div>
 
+        </div>
       </div>
 
-      <div class="fixed sm:absolute bottom-0 w-full bg-white border-t flex justify-around p-2 z-30">
-        <button @click="activeTab = 'profile'" :class="activeTab === 'profile' ? 'text-pink-600' : 'text-gray-400'" class="flex flex-col items-center p-2 font-bold text-sm transition"><i class="ph-fill ph-device-mobile text-2xl"></i> Profile設計</button>
-        <button @click="activeTab = 'line'" :class="activeTab === 'line' ? 'text-purple-600' : 'text-gray-400'" class="flex flex-col items-center p-2 font-bold text-sm transition"><i class="ph-fill ph-chat-circle-text text-2xl"></i> LINE輪播</button>
+      <div class="fixed sm:absolute bottom-0 w-full bg-white border-t flex justify-around p-2 z-30 shrink-0">
+        <button @click="activeTab = 'profile'; activePaletteId = null;" :class="activeTab === 'profile' ? 'text-pink-600' : 'text-gray-400'" class="flex flex-col items-center p-2 font-bold text-sm"><i class="ph-fill ph-device-mobile text-2xl"></i> Profile設計</button>
+        <button @click="activeTab = 'line'; activePaletteId = null;" :class="activeTab === 'line' ? 'text-purple-600' : 'text-gray-400'" class="flex flex-col items-center p-2 font-bold text-sm"><i class="ph-fill ph-chat-circle-text text-2xl"></i> LINE輪播</button>
       </div>
     </div>
 
     <div v-show="isMediaModalOpen" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col h-[80vh]">
-            <div class="p-5 border-b flex justify-between items-center bg-gray-50"><h2 class="font-black text-lg flex items-center gap-2"><i class="ph-fill ph-folder-open text-pink-500"></i> 專屬雲端圖庫</h2><button @click="isMediaModalOpen = false" class="text-gray-400 hover:text-red-500"><i class="ph ph-x text-lg"></i></button></div>
+            <div class="p-5 border-b flex justify-between items-center bg-gray-50"><h2 class="font-black text-lg flex items-center gap-2"><i class="ph-fill ph-folder-open text-pink-500"></i> 專屬雲端圖庫</h2><button @click="closeMediaLibrary" class="text-gray-400 hover:text-red-500"><i class="ph ph-x text-lg"></i></button></div>
             <div class="p-5 flex-1 overflow-y-auto bg-gray-100">
                 <div class="mb-6 flex gap-3">
                     <input type="file" ref="fileInput" @change="handleFileSelect" accept="image/*" class="hidden">
-                    <button @click="$refs.fileInput.click()" class="flex-1 bg-white border border-gray-200 text-gray-700 font-bold py-3 rounded-xl shadow-sm hover:border-pink-500 flex justify-center items-center gap-2"><i class="ph ph-upload-simple"></i> 上傳新照片</button>
+                    <button @click="$refs.fileInput.click()" class="flex-1 bg-white border border-gray-200 text-gray-700 font-bold py-3 rounded-xl shadow-sm hover:border-pink-500 flex justify-center items-center gap-2"><i class="ph ph-upload-simple"></i> 由裝置上傳新照片</button>
                 </div>
+                <h3 class="font-bold text-gray-500 text-sm mb-3">雲端歷史圖片 (點擊套用)</h3>
                 <div v-if="isLoadingImages" class="text-center py-10 text-gray-400 animate-pulse"><i class="ph ph-spinner animate-spin text-2xl"></i> 讀取中...</div>
                 <div v-else class="grid grid-cols-3 sm:grid-cols-4 gap-3">
                     <div v-for="img in mediaImages" :key="img.id" @click="selectImage(img.url)" class="aspect-square bg-gray-200 rounded-xl border border-gray-300 hover:border-pink-500 cursor-pointer overflow-hidden group relative">
@@ -325,7 +352,7 @@
 
     <div v-show="isCropModalOpen" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] flex items-center justify-center p-4">
         <div class="bg-gray-900 w-full max-w-lg rounded-3xl overflow-hidden flex flex-col shadow-2xl border border-gray-700">
-            <div class="p-4 border-b border-gray-800 flex justify-between items-center text-white"><h2 class="font-bold">移動並縮放以裁切大頭貼</h2><button @click="closeCropper" class="text-gray-400 hover:text-white"><i class="ph ph-x text-xl"></i></button></div>
+            <div class="p-4 border-b border-gray-800 flex justify-between items-center text-white"><h2 class="font-bold">移動並縮放以裁切</h2><button @click="closeCropper" class="text-gray-400 hover:text-white"><i class="ph ph-x text-xl"></i></button></div>
             <div class="p-4 bg-black flex justify-center items-center min-h-[300px] max-h-[50vh] overflow-hidden"><img id="cropImageTarget" class="max-w-full block"></div>
             <div class="p-4 flex gap-3 bg-gray-900">
                 <button @click="closeCropper" class="flex-1 bg-gray-800 text-white font-bold py-3 rounded-xl hover:bg-gray-700 transition">取消</button>
@@ -346,12 +373,10 @@
         const currentView = ref('login'); 
         const activeTab = ref('profile'); 
         const currentUser = ref(null);
-        
-        // 🌟 手機版雙向切換狀態 ('preview' or 'edit')
         const mobileViewModeProfile = ref('edit'); 
         const mobileViewModeSlide = ref('edit');
-        const activePaletteId = ref(null); // 控制哪個按鈕的調色盤打開
-
+        const activePaletteId = ref(null); // 控制全局唯一開啟的調色盤
+        
         const loginForm = ref({ email: '', password: '' });
         const regForm = ref({ name: '', email: '' });
         const isLoading = ref(false);
@@ -359,31 +384,26 @@
         const isSaving = ref(false);
         const isRegSuccess = ref(false);
 
-        // 🌟 自訂無 Alert 的提示與確認窗
         const toast = ref({ show: false, message: '', type: 'success' });
         const showToast = (msg, type = 'success') => { toast.value = { show: true, message: msg, type }; setTimeout(() => { toast.value.show = false; }, 3000); };
         
         const confirmModal = ref({ show: false, title: '', message: '', pendingAction: null });
         const requestDelete = (type, id, index, titleName) => {
-            confirmModal.value = {
-                show: true,
-                title: '確認徹底刪除？',
-                message: `即將刪除「${titleName || '未命名項目'}」，此動作無法復原並會立即同步至資料庫。`,
-                pendingAction: () => executeActualDelete(type, id, index)
-            };
+            confirmModal.value = { show: true, title: '確認徹底刪除？', message: `刪除「${titleName || '未命名'}」無法復原並會立即同步。`, pendingAction: () => executeActualDelete(type, id, index) };
         };
-        const executeConfirm = () => {
-            if(confirmModal.value.pendingAction) confirmModal.value.pendingAction();
-            confirmModal.value.show = false;
-        };
+        const executeConfirm = () => { if(confirmModal.value.pendingAction) confirmModal.value.pendingAction(); confirmModal.value.show = false; };
 
         const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzFIevyKloCU9wbGMUdAES-BKIr9KxXVUZgfIfRJmrWlZnBR6QuE9kIcESvbATzW0t4bw/exec';
         
-        // 🌟 重新設計的 27 個色票 + 白色
+        // 🌟 5階同色系漸層 (5 column x 7 rows)
         const colorMatrix = ref([
-            '#fee2e2', '#ffedd5', '#fef9c3', '#dcfce7', '#e0f2fe', '#e0e7ff', '#fae8ff', '#f3f4f6', '#ffffff',
-            '#fca5a5', '#fdba74', '#fde047', '#86efac', '#7dd3fc', '#a5b4fc', '#f472b6', '#9ca3af', '#1f2937',
-            '#ef4444', '#f97316', '#eab308', '#22c55e', '#0ea5e9', '#6366f1', '#ec4899', '#4b5563', '#000000'
+            ['#fef2f2', '#fca5a5', '#ef4444', '#b91c1c', '#7f1d1d'], // Red
+            ['#fff7ed', '#fdba74', '#f97316', '#c2410c', '#7c2d12'], // Orange
+            ['#fefce8', '#fde047', '#eab308', '#a16207', '#713f12'], // Yellow
+            ['#f0fdf4', '#86efac', '#22c55e', '#15803d', '#14532d'], // Green
+            ['#eff6ff', '#7dd3fc', '#0ea5e9', '#0369a1', '#0c4a6e'], // Blue
+            ['#fdf2f8', '#f9a8d4', '#ec4899', '#be185d', '#831843'], // Pink
+            ['#f9fafb', '#d1d5db', '#6b7280', '#1f2937', '#000000']  // Gray
         ]);
 
         const profile = ref({ avatarUrl: '', name: '', bio: '', bgColor: '#FDF2F8' });
@@ -396,6 +416,12 @@
         const currentUploadContext = ref('');
         const currentButtonIndex = ref(null);
         
+        // 🌟 圖片快取，不重複載入
+        const profileImagesCache = ref([]);
+        const slideImagesCache = ref([]);
+        const hasLoadedProfileImages = ref(false);
+        const hasLoadedSlideImages = ref(false);
+
         const isCropModalOpen = ref(false);
         const isUploading = ref(false);
         let cropperInstance = null;
@@ -443,26 +469,22 @@
 
         const logout = () => { localStorage.removeItem('ruby_user'); currentView.value = 'login'; currentUser.value = null; showToast('已安全登出'); };
         
-        // ==== 共用排序與自適應 ====
-        const moveItem = (arr, index, dir) => {
-            const nIdx = index + dir;
-            if (nIdx < 0 || nIdx >= arr.length) return;
-            const temp = arr[index]; arr[index] = arr[nIdx]; arr[nIdx] = temp;
-        };
+        const moveItem = (arr, index, dir) => { const nIdx = index + dir; if (nIdx < 0 || nIdx >= arr.length) return; const temp = arr[index]; arr[index] = arr[nIdx]; arr[nIdx] = temp; };
         const autoResize = (id) => { const el = document.getElementById(id); if(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } };
+        const togglePalette = (id) => { activePaletteId.value = activePaletteId.value === id ? null : id; };
         
         const addNewButton = () => { buttons.value.push({ id: Date.now().toString(), title: '', url: '', color: '#ffffff', iconUrl: '' }); nextTick(()=>{document.querySelector('.overflow-y-auto').scrollTop = 9999;}); };
-        const addNewSlide = () => { slides.value.push({ id: Date.now().toString(), sort: slides.value.length + 1, imageUrl: '', title: '', description: '', buttons: [{text:'', url:''}] }); nextTick(() => { document.querySelector('.line-carousel-container').scrollLeft = 9999; }); };
+        const addNewSlide = () => { slides.value.push({ id: Date.now().toString(), sort: slides.value.length + 1, imageUrl: '', title: '', description: '', buttons: [] }); nextTick(() => { document.querySelector('.line-carousel-container').scrollLeft = 9999; }); };
 
         const saveAllData = async () => {
-            isSaving.value = true;
+            isSaving.value = true; activePaletteId.value = null;
             try {
                 const res = await apiCall({ action: 'saveAll', memberId: currentUser.value.memberId, profile: profile.value, buttons: buttons.value });
-                if(res.status === 'success') { showToast('🎉 Profile 已完美同步前台！'); activePaletteId.value = null; } else showToast('儲存失敗', 'error');
+                if(res.status === 'success') { showToast('🎉 Profile 已完美同步！'); } else showToast('儲存失敗', 'error');
             } finally { isSaving.value = false; }
         };
         const saveSlidesData = async () => {
-            isSaving.value = true;
+            isSaving.value = true; activePaletteId.value = null;
             try {
                 const res = await apiCall({ action: 'saveSlides', memberId: currentUser.value.memberId, slides: slides.value });
                 if(res.status === 'success') showToast('🚀 輪播變更已發佈至 LINE'); else showToast('發佈失敗', 'error');
@@ -474,18 +496,26 @@
             const deletedItem = arr.value.splice(index, 1)[0]; 
             try {
                 const res = await apiCall({ action: 'deleteItem', memberId: currentUser.value.memberId, itemId: id, type: type });
-                if(res.status==='success') showToast('已徹底刪除並寫入紀錄'); else throw new Error();
+                if(res.status==='success') showToast('已徹底刪除'); else throw new Error();
             } catch(e) { arr.value.splice(index, 0, deletedItem); showToast('刪除失敗', 'error'); }
         };
 
-        // ==== 媒體與裁切邏輯 ====
         const openMediaLibrary = async (context, index = null) => {
-            currentUploadContext.value = context; currentButtonIndex.value = index; isMediaModalOpen.value = true;
-            const targetFolderId = context === 'slide' ? currentUser.value.slideFolderId : currentUser.value.profileFolderId;
-            isLoadingImages.value = true;
+            currentUploadContext.value = context; currentButtonIndex.value = index; 
+            const isProfileContext = context === 'avatar' || context === 'buttonIcon';
+            const targetFolderId = isProfileContext ? currentUser.value.profileFolderId : currentUser.value.slideFolderId;
+            
+            // 🌟 檢查快取
+            if (isProfileContext && hasLoadedProfileImages.value) { mediaImages.value = profileImagesCache.value; isMediaModalOpen.value = true; return; }
+            if (!isProfileContext && hasLoadedSlideImages.value) { mediaImages.value = slideImagesCache.value; isMediaModalOpen.value = true; return; }
+
+            isLoadingImages.value = true; isMediaModalOpen.value = true;
             try {
                 const res = await apiCall({ action: 'getImages', folderId: targetFolderId });
-                if(res.status === 'success') mediaImages.value = res.data;
+                if(res.status === 'success') {
+                    if (isProfileContext) { profileImagesCache.value = res.data; hasLoadedProfileImages.value = true; mediaImages.value = profileImagesCache.value; }
+                    else { slideImagesCache.value = res.data; hasLoadedSlideImages.value = true; mediaImages.value = slideImagesCache.value; }
+                }
             } finally { isLoadingImages.value = false; }
         };
         const closeMediaLibrary = () => { isMediaModalOpen.value = false; };
@@ -522,10 +552,11 @@
         };
 
         const directUpload = (file) => {
-            isUploading.value = true; isFetchingData.value = true; showToast('上傳高畫質原圖中...');
+            isUploading.value = true; showToast('上傳原圖中...');
             const reader = new FileReader();
             reader.onload = async (e) => {
-                uploadToDrive(e.target.result.split(',')[1], file.type, file.name.split('.').pop(), currentUploadContext.value === 'slide' ? currentUser.value.slideFolderId : currentUser.value.profileFolderId, false);
+                const isSlide = currentUploadContext.value === 'slide';
+                uploadToDrive(e.target.result.split(',')[1], file.type, file.name.split('.').pop(), isSlide ? currentUser.value.slideFolderId : currentUser.value.profileFolderId, false);
             };
             reader.readAsDataURL(file);
         };
@@ -535,11 +566,15 @@
             .then(res => {
                 if(res.status === 'success') {
                     showToast('雲端儲存成功！');
-                    mediaImages.value.unshift({ id: res.id, url: res.fileUrl, name: res.name });
+                    const newImg = { id: res.id, url: res.fileUrl, name: res.name };
+                    // 更新對應快取
+                    if (currentUploadContext.value === 'slide') slideImagesCache.value.unshift(newImg);
+                    else profileImagesCache.value.unshift(newImg);
+                    mediaImages.value.unshift(newImg);
                     if(isCropped) closeCropper();
                     selectImage(res.fileUrl);
                 } else showToast('上傳異常', 'error');
-            }).finally(() => { isUploading.value = false; isFetchingData.value = false; });
+            }).finally(() => { isUploading.value = false; });
         };
 
         const selectImage = (url) => {
@@ -551,7 +586,7 @@
 
         return { 
           currentView, activeTab, currentUser, loginForm, regForm, isRegSuccess, colorMatrix,
-          mobileViewModeProfile, mobileViewModeSlide, activePaletteId,
+          mobileViewModeProfile, mobileViewModeSlide, activePaletteId, togglePalette,
           isLoading, isFetchingData, isSaving, toast, confirmModal, requestDelete, executeConfirm,
           handleLogin, handleRegister, logout, saveAllData, saveSlidesData, autoResize,
           profile, buttons, slides, addNewButton, addNewSlide, moveItem, 
