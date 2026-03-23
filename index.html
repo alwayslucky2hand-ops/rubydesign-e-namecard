@@ -468,33 +468,47 @@
             ['#f9fafb', '#d1d5db', '#6b7280', '#1f2937', '#000000']  
         ]);
 
+        // 【更新】新增「轉發好友」按鈕類型
         const buttonTypes = ref([
             { val: 'url', label: '網頁連結' },
             { val: 'line', label: 'LINE 加好友' },
+            { val: 'share', label: '轉發好友' },
             { val: 'social', label: '社群媒體' },
             { val: 'tel', label: '電話撥打' },
             { val: 'email', label: '發送郵件' }
         ]);
 
+        // 【更新】新增「轉發好友」的輸入框佔位提示符
         const getPlaceholder = (type) => {
-            const map = { 'url': '連結網址 (https://...)', 'tel': '電話號碼 (09...)', 'email': '電子郵件', 'line': '輸入 LINE ID (需包含 @)', 'social': 'FB/IG 連結' };
+            const map = { 
+                'url': '連結網址 (https://...)', 
+                'tel': '電話號碼 (09...)', 
+                'email': '電子郵件', 
+                'line': '輸入 LINE ID (需包含 @)', 
+                'share': '輸入轉發文案與連結 (會自動帶入轉發畫面)',
+                'social': 'FB/IG 連結' 
+            };
             return map[type] || '輸入內容';
         };
 
+        // 【更新】反向解析，用於載入已儲存的轉發深層連結 (Deep Link)
         const parseLink = (url) => {
             if (!url) return { type: 'url', value: '' };
             if (url.startsWith('tel:')) return { type: 'tel', value: url.replace('tel:', '') };
             if (url.startsWith('mailto:')) return { type: 'email', value: url.replace('mailto:', '') };
             if (url.includes('line.me/ti/p/~')) return { type: 'line', value: decodeURIComponent(url.split('line.me/ti/p/~')[1]) };
+            if (url.includes('line.me/R/msg/text/?')) return { type: 'share', value: decodeURIComponent(url.split('line.me/R/msg/text/?')[1]) };
             if (url.includes('line.me')) return { type: 'line', value: url }; 
             if (url.includes('facebook.com') || url.includes('instagram.com') || url.includes('youtube.com')) return { type: 'social', value: url };
             return { type: 'url', value: url };
         };
 
+        // 【更新】將轉發內容封裝為原生喚醒深層連結
         const buildFinalLink = (type, value) => {
             if (!value) return '#';
             if (type === 'tel') return value.startsWith('tel:') ? value : 'tel:' + value;
             if (type === 'email') return value.startsWith('mailto:') ? value : 'mailto:' + value;
+            if (type === 'share') return 'https://line.me/R/msg/text/?' + encodeURIComponent(value);
             if (type === 'line') {
                 if (value.startsWith('http')) return value;
                 return 'https://line.me/ti/p/~' + value.replace('@', '%40'); 
@@ -505,7 +519,6 @@
             return value;
         };
 
-        // 新增字體轉換對應，讓預覽區有真實感
         const getFontFamily = (fontName) => {
             const map = { '預設字體': 'sans-serif', '黑體': '"Noto Sans TC", sans-serif', '明體': '"Noto Serif TC", serif', '圓體': '"Zen Maru Gothic", sans-serif' };
             return map[fontName] || 'sans-serif';
@@ -599,7 +612,6 @@
         const togglePalette = (id) => { activePaletteId.value = activePaletteId.value === id ? null : id; };
         
         const addNewButton = () => { buttons.value.push({ id: Date.now().toString(), type: 'url', title: '', linkValue: '', color: '#ffffff', iconUrl: '' }); nextTick(()=>{ window.scrollTo(0, document.body.scrollHeight); }); };
-        // 新增輪播卡片時，初始化字體與字色
         const addNewSlide = () => { slides.value.push({ id: Date.now().toString(), sort: slides.value.length + 1, imageUrl: '', buttonFont: '預設字體', buttonTextColor: '#1a5eb2', buttons: [] }); nextTick(() => { window.scrollTo(0, document.body.scrollHeight); }); };
 
         const saveAllData = async () => {
