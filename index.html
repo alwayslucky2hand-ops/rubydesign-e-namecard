@@ -13,7 +13,7 @@
     /* 基礎設定 */
     body { font-family: 'Inter', sans-serif; background-color: #FDF2F8; -webkit-tap-highlight-color: transparent; }
     
-    /* Vue 防閃爍機制 (確保載入滑順) */
+    /* Vue 防閃爍機制 (優化加入) */
     [v-cloak] { display: none !important; }
 
     /* UI 元件樣式 */
@@ -227,7 +227,7 @@
                                     <div class="flex-1 space-y-2">
                                         <div class="flex gap-2">
                                             <div class="relative w-[110px] shrink-0">
-                                                <select v-model="btn.type" class="w-full appearance-none bg-white border border-gray-200 text-gray-600 font-bold px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-pink-400 text-xs cursor-pointer shadow-inner">
+                                                <select v-model="btn.type" @change="handleTypeChange(btn)" class="w-full appearance-none bg-white border border-gray-200 text-gray-600 font-bold px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-pink-400 text-xs cursor-pointer shadow-inner">
                                                     <option v-for="type in buttonTypes" :key="type.val" :value="type.val">{{ type.label }}</option>
                                                 </select>
                                                 <i class="ph-bold ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-xs"></i>
@@ -297,7 +297,7 @@
                                 </div>
                                 <div class="flex flex-col gap-2 p-3 flex-1" :style="{ backgroundColor: slide.bgColor || '#ffffff' }">
                                     <a v-for="(sBtn, bIdx) in slide.buttons" :key="bIdx" :href="buildFinalLink(sBtn.type, sBtn.linkValue)" target="_blank" class="rounded-xl p-3 text-center text-[15px] font-bold hover:opacity-80 transition" :style="{ backgroundColor: sBtn.color || '#6C0B22', color: slide.buttonTextColor || '#ffffff', fontFamily: getFontFamily(slide.buttonFont) }">
-                                        {{ sBtn.title || '發送 電子名片' }}
+                                        {{ sBtn.title || '按鈕文字' }}
                                     </a>
                                 </div>
                             </div>
@@ -369,7 +369,7 @@
                                             <div class="flex justify-between items-center border-b pb-2">
                                                 <div class="flex items-center gap-3">
                                                     <div class="relative w-[100px]">
-                                                        <select v-model="sBtn.type" class="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-600 font-bold px-2 py-1.5 rounded outline-none focus:ring-1 focus:ring-pink-400 text-[10px] cursor-pointer">
+                                                        <select v-model="sBtn.type" @change="handleTypeChange(sBtn)" class="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-600 font-bold px-2 py-1.5 rounded outline-none focus:ring-1 focus:ring-pink-400 text-[10px] cursor-pointer">
                                                             <option v-for="type in buttonTypes" :key="type.val" :value="type.val">{{ type.label }}</option>
                                                         </select>
                                                         <i class="ph-bold ph-caret-down absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-[10px]"></i>
@@ -526,7 +526,7 @@
                 'tel': '電話號碼 (09...)', 
                 'email': '電子郵件', 
                 'line': '輸入 LINE ID (需包含 @)', 
-                'share': '輸入轉發文案與連結 (會自動帶入轉發畫面)',
+                'share': '請輸入轉發文案 (系統已自動帶入名片網址)', // 優化佔位符文案
                 'social': 'FB/IG 連結' 
             };
             return map[type] || '輸入內容';
@@ -566,6 +566,14 @@
                 '圓體': '"Zen Maru Gothic", sans-serif' 
             };
             return map[fontName] || 'sans-serif';
+        };
+
+        // 🌟 自動帶入專屬連結功能 
+        const handleTypeChange = (item) => {
+            if (item.type === 'share' && !item.linkValue) {
+                const liffId = "2009561347-VUhbtrEC"; 
+                item.linkValue = `哈囉！這是我的專屬數位名片，請點擊連結查看：\nhttps://liff.line.me/${liffId}?id=${currentUser.value.memberId}`;
+            }
         };
 
         // --- 資料容器 ---
@@ -967,7 +975,7 @@
         // --- 回傳給 Template ---
         return { 
           currentView, activeTab, currentUser, loginForm, regForm, isRegSuccess, colorMatrix,
-          buttonTypes, getPlaceholder, buildFinalLink, getFontFamily,
+          buttonTypes, getPlaceholder, buildFinalLink, getFontFamily, handleTypeChange,
           mobileViewModeProfile, mobileViewModeSlide, activePaletteId, togglePalette,
           isLoading, isFetchingData, isSaving, toast, confirmModal, requestDelete, executeConfirm,
           handleLogin, handleRegister, logout, saveAllData, saveSlidesData, autoResize,
