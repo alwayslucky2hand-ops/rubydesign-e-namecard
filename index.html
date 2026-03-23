@@ -271,13 +271,8 @@
                                     <div v-else class="w-full h-40 flex items-center justify-center text-gray-400"><i class="ph ph-image text-3xl"></i></div>
                                 </div>
                                 
-                                <div class="p-4 flex-1 flex flex-col">
-                                    <h4 class="font-bold text-gray-900 text-[15px] truncate">{{ slide.title || '卡片標題' }}</h4>
-                                    <p class="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">{{ slide.description || '描述內容文字...' }}</p>
-                                </div>
-                                
-                                <div class="flex flex-col gap-1 px-3 mt-auto">
-                                    <a v-for="(sBtn, bIdx) in slide.buttons" :key="bIdx" :href="buildFinalLink(sBtn.type, sBtn.linkValue)" target="_blank" class="rounded-lg p-2.5 text-center text-sm font-bold hover:opacity-80 transition" :style="{ backgroundColor: sBtn.color || '#ebedf0', color: sBtn.color && sBtn.color !== '#ebedf0' && sBtn.color !== '#ffffff' ? '#ffffff' : '#1a5eb2' }">
+                                <div class="flex flex-col gap-1 px-3 mt-auto pt-3">
+                                    <a v-for="(sBtn, bIdx) in slide.buttons" :key="bIdx" :href="buildFinalLink(sBtn.type, sBtn.linkValue)" target="_blank" class="rounded-lg p-2.5 text-center text-sm font-bold hover:opacity-80 transition" :style="{ backgroundColor: sBtn.color || '#ebedf0', color: slide.buttonTextColor || '#1a5eb2', fontFamily: getFontFamily(slide.buttonFont) }">
                                         {{ sBtn.title || '按鈕名稱' }}
                                     </a>
                                 </div>
@@ -302,7 +297,7 @@
                                     <div class="flex gap-1.5">
                                         <button @click="moveItem(slides, index, -1)" :disabled="index === 0" class="p-1 bg-white border border-gray-200 rounded text-gray-500 disabled:opacity-30 hover:bg-gray-100"><i class="ph ph-arrow-up"></i></button>
                                         <button @click="moveItem(slides, index, 1)" :disabled="index === slides.length - 1" class="p-1 bg-white border border-gray-200 rounded text-gray-500 disabled:opacity-30 hover:bg-gray-100"><i class="ph ph-arrow-down"></i></button>
-                                        <button @click="requestDelete('slide', slide.id, index, slide.title)" class="p-1 bg-red-50 border border-red-100 text-red-500 rounded hover:bg-red-100"><i class="ph ph-trash"></i></button>
+                                        <button @click="requestDelete('slide', slide.id, index, '第 ' + (index + 1) + ' 張輪播圖')" class="p-1 bg-red-50 border border-red-100 text-red-500 rounded hover:bg-red-100"><i class="ph ph-trash"></i></button>
                                     </div>
                                 </div>
 
@@ -311,8 +306,20 @@
                                         <img v-if="slide.imageUrl" :src="slide.imageUrl" class="w-full h-full object-cover"><div v-else class="text-center text-gray-400"><i class="ph ph-upload-simple text-xl"></i><p class="text-[10px] font-bold mt-1">原圖上傳</p></div>
                                     </div>
                                     <div class="flex-1 space-y-3">
-                                        <input v-model="slide.title" class="w-full text-sm font-bold p-3 rounded-xl border bg-white outline-none focus:ring-1 focus:ring-pink-400 shadow-inner" placeholder="標題">
-                                        <textarea v-model="slide.description" @input="autoResize('desc_' + slide.id)" :id="'desc_' + slide.id" class="w-full text-xs p-3 rounded-xl border bg-white outline-none resize-none focus:ring-1 focus:ring-pink-400 overflow-hidden shadow-inner" rows="2" placeholder="描述"></textarea>
+                                        <div class="flex items-center gap-2">
+                                            <label class="text-xs font-bold text-gray-500 w-16">按鈕字體</label>
+                                            <select v-model="slide.buttonFont" class="flex-1 text-sm font-bold p-2.5 rounded-xl border bg-white outline-none focus:ring-1 focus:ring-purple-400 shadow-inner">
+                                                <option value="預設字體">預設字體</option>
+                                                <option value="黑體">黑體</option>
+                                                <option value="明體">明體</option>
+                                                <option value="圓體">圓體</option>
+                                            </select>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <label class="text-xs font-bold text-gray-500 w-16">按鈕字色</label>
+                                            <div class="relative w-8 h-8 rounded-full overflow-hidden border border-gray-200 shadow-sm shrink-0"><input type="color" v-model="slide.buttonTextColor" class="absolute -inset-2 w-12 h-12 cursor-pointer"></div>
+                                            <input v-model="slide.buttonTextColor" type="text" class="flex-1 text-sm font-bold p-2.5 rounded-xl border bg-white outline-none focus:ring-1 focus:ring-purple-400 shadow-inner text-gray-600 uppercase" placeholder="#1A5EB2">
+                                        </div>
                                     </div>
                                 </div>
 
@@ -438,7 +445,7 @@
         const isFetchingData = ref(false);
         const isSaving = ref(false);
         const isRegSuccess = ref(false);
-        const isLinkCopied = ref(false); // 🌟 新增：控制複製按鈕狀態
+        const isLinkCopied = ref(false);
 
         const toast = ref({ show: false, message: '', type: 'success' });
         const showToast = (msg, type = 'success') => { toast.value = { show: true, message: msg, type }; setTimeout(() => { toast.value.show = false; }, 3000); };
@@ -498,6 +505,12 @@
             return value;
         };
 
+        // 新增字體轉換對應，讓預覽區有真實感
+        const getFontFamily = (fontName) => {
+            const map = { '預設字體': 'sans-serif', '黑體': '"Noto Sans TC", sans-serif', '明體': '"Noto Serif TC", serif', '圓體': '"Zen Maru Gothic", sans-serif' };
+            return map[fontName] || 'sans-serif';
+        };
+
         const profile = ref({ avatarUrl: '', name: '', bio: '', bgColor: '#FDF2F8' });
         const buttons = ref([]);
         const slides = ref([]); 
@@ -554,7 +567,6 @@
                 
                 nextTick(() => { 
                     autoResize('bio-textarea-edit'); 
-                    slides.value.forEach(s => autoResize('desc_'+s.id));
                 }); 
             } catch (e) { showToast('載入失敗', 'error'); } 
             finally { isFetchingData.value = false; }
@@ -587,7 +599,8 @@
         const togglePalette = (id) => { activePaletteId.value = activePaletteId.value === id ? null : id; };
         
         const addNewButton = () => { buttons.value.push({ id: Date.now().toString(), type: 'url', title: '', linkValue: '', color: '#ffffff', iconUrl: '' }); nextTick(()=>{ window.scrollTo(0, document.body.scrollHeight); }); };
-        const addNewSlide = () => { slides.value.push({ id: Date.now().toString(), sort: slides.value.length + 1, imageUrl: '', title: '', description: '', buttons: [] }); nextTick(() => { window.scrollTo(0, document.body.scrollHeight); }); };
+        // 新增輪播卡片時，初始化字體與字色
+        const addNewSlide = () => { slides.value.push({ id: Date.now().toString(), sort: slides.value.length + 1, imageUrl: '', buttonFont: '預設字體', buttonTextColor: '#1a5eb2', buttons: [] }); nextTick(() => { window.scrollTo(0, document.body.scrollHeight); }); };
 
         const saveAllData = async () => {
             isSaving.value = true; activePaletteId.value = null;
@@ -701,34 +714,27 @@
             isMediaModalOpen.value = false; 
         };
 
-        // 🌟 新增：一鍵複製並喚醒 LINE 發送的魔法函數
         const copyAndShareLiffUrl = async () => {
             if (!currentUser.value) return;
             
-            // 動態組合出該會員專屬的 LIFF 網址
             const liffId = "2009561347-VUhbtrEC"; 
             const shareUrl = `https://liff.line.me/${liffId}?id=${currentUser.value.memberId}`;
             const shareText = `哈囉！這是我的E-LINE-CARD，請點擊連結查看：\n${shareUrl}`;
             
             try {
-                // 1. 複製到剪貼簿
                 await navigator.clipboard.writeText(shareUrl);
                 
-                // 2. 改變按鈕狀態給予視覺回饋
                 isLinkCopied.value = true;
                 showToast('已複製網址，準備為您開啟 LINE！');
                 
-                // 3. 延遲 1.5 秒後，用 URL Scheme 喚醒 LINE App 選擇好友
                 setTimeout(() => {
                     const lineUrlScheme = `https://line.me/R/msg/text/?${encodeURIComponent(shareText)}`;
                     window.open(lineUrlScheme, '_blank');
                     
-                    // 恢復按鈕原本的狀態
                     setTimeout(() => { isLinkCopied.value = false; }, 2000);
                 }, 1500);
 
             } catch (err) {
-                // 針對舊版瀏覽器的備用複製方案
                 const input = document.createElement('textarea');
                 input.value = shareUrl;
                 document.body.appendChild(input);
@@ -749,14 +755,14 @@
 
         return { 
           currentView, activeTab, currentUser, loginForm, regForm, isRegSuccess, colorMatrix,
-          buttonTypes, getPlaceholder, buildFinalLink,
+          buttonTypes, getPlaceholder, buildFinalLink, getFontFamily,
           mobileViewModeProfile, mobileViewModeSlide, activePaletteId, togglePalette,
           isLoading, isFetchingData, isSaving, toast, confirmModal, requestDelete, executeConfirm,
           handleLogin, handleRegister, logout, saveAllData, saveSlidesData, autoResize,
           profile, buttons, slides, addNewButton, addNewSlide, moveItem, 
           isMediaModalOpen, mediaImages, isLoadingImages, openMediaLibrary, closeMediaLibrary, selectImage,
           handleFileSelect, isCropModalOpen, isUploading, closeCropper, confirmCropAndUpload,
-          isLinkCopied, copyAndShareLiffUrl // 導出新功能給 HTML 使用
+          isLinkCopied, copyAndShareLiffUrl 
         };
       }
     }).mount('#app');
