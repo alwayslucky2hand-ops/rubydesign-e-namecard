@@ -21,7 +21,9 @@
     .mockup-line-chat { width: 340px; min-height: 700px; border: 12px solid #1f2937; border-radius: 40px; overflow: hidden; background: #749cbd; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: 0 auto; display: flex; flex-direction: column;}
     .line-header { background: #262626; color: white; padding: 35px 15px 15px 15px; font-weight: bold; display: flex; align-items: center; gap: 10px; font-size: 15px;}
     .line-carousel-container { display: flex; gap: 10px; overflow-x: auto; padding: 20px 15px; scroll-snap-type: x mandatory;}
-    .line-card { min-width: 260px; max-width: 260px; background: white; border-radius: 16px; overflow: hidden; scroll-snap-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; flex-direction: column;}
+    
+    /* 優化：將卡片寬度稍微加寬至 280px，符合高階滿版比例 */
+    .line-card { min-width: 280px; max-width: 280px; background: white; border-radius: 16px; overflow: hidden; scroll-snap-align: center; box-shadow: 0 6px 16px rgba(0,0,0,0.15); display: flex; flex-direction: column;}
     
     .toast-enter-active, .toast-leave-active { transition: all 0.5s ease; }
     .toast-enter-from, .toast-leave-to { opacity: 0; transform: translate(-50%, -20px); }
@@ -263,20 +265,26 @@
                     <div class="flex-1 overflow-y-auto no-scrollbar pb-6 flex flex-col justify-end">
                         <div v-if="slides.length === 0" class="text-center text-white/50 text-sm mt-10">尚無輪播卡片，請從編輯區新增</div>
                         
-                        <div class="line-carousel-container no-scrollbar items-stretch">
-                            <div v-for="slide in slides" :key="slide.id" class="line-card flex flex-col shrink-0 pb-2 h-auto" :style="{ backgroundColor: slide.bgColor || '#ffffff' }">
+                        <div class="line-carousel-container no-scrollbar items-stretch pb-6">
+                            
+                            <div v-for="slide in slides" :key="slide.id" class="line-card flex flex-col shrink-0 h-[460px]" :style="{ backgroundColor: slide.bgColor || '#ffffff' }">
                                 
-                                <div class="bg-gray-200 relative shrink-0 border-b border-gray-100 flex items-center justify-center min-h-[160px]">
-                                    <img v-if="slide.imageUrl" :src="slide.imageUrl" class="w-full h-auto object-contain max-h-[350px]">
-                                    <div v-else class="w-full h-40 flex items-center justify-center text-gray-400"><i class="ph ph-image text-3xl"></i></div>
+                                <div class="relative flex-1 w-full bg-gray-100 overflow-hidden">
+                                    <img v-if="slide.imageUrl" :src="slide.imageUrl" class="absolute inset-0 w-full h-full object-cover">
+                                    <div v-else class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 bg-gray-200">
+                                        <i class="ph ph-image text-4xl mb-2"></i>
+                                        <span class="text-[10px] font-bold">建議比例 3:4 或 4:5</span>
+                                    </div>
                                 </div>
                                 
-                                <div class="flex flex-col gap-1 px-3 mt-auto pt-3">
-                                    <a v-for="(sBtn, bIdx) in slide.buttons" :key="bIdx" :href="buildFinalLink(sBtn.type, sBtn.linkValue)" target="_blank" class="rounded-lg p-2.5 text-center text-sm font-bold hover:opacity-80 transition" :style="{ backgroundColor: sBtn.color || '#ebedf0', color: slide.buttonTextColor || '#1a5eb2', fontFamily: getFontFamily(slide.buttonFont) }">
-                                        {{ sBtn.title || '按鈕名稱' }}
+                                <div v-if="slide.buttons && slide.buttons.length > 0" class="flex flex-col gap-2 p-3 shrink-0" :style="{ backgroundColor: slide.bgColor || '#ffffff' }">
+                                    <a v-for="(sBtn, bIdx) in slide.buttons" :key="bIdx" :href="buildFinalLink(sBtn.type, sBtn.linkValue)" target="_blank" class="rounded-xl p-3 text-center text-[15px] font-bold hover:opacity-80 transition" :style="{ backgroundColor: sBtn.color || '#6C0B22', color: slide.buttonTextColor || '#ffffff', fontFamily: getFontFamily(slide.buttonFont) }">
+                                        {{ sBtn.title || '發送 電子名片' }}
                                     </a>
                                 </div>
+
                             </div>
+                            
                         </div>
 
                     </div>
@@ -318,7 +326,7 @@
                                         <div class="flex items-center gap-2">
                                             <label class="text-xs font-bold text-gray-500 w-16">按鈕字色</label>
                                             <div class="relative w-8 h-8 rounded-full overflow-hidden border border-gray-200 shadow-sm shrink-0"><input type="color" v-model="slide.buttonTextColor" class="absolute -inset-2 w-12 h-12 cursor-pointer"></div>
-                                            <input v-model="slide.buttonTextColor" type="text" class="flex-1 text-sm font-bold p-2.5 rounded-xl border bg-white outline-none focus:ring-1 focus:ring-purple-400 shadow-inner text-gray-600 uppercase" placeholder="#1A5EB2">
+                                            <input v-model="slide.buttonTextColor" type="text" class="flex-1 text-sm font-bold p-2.5 rounded-xl border bg-white outline-none focus:ring-1 focus:ring-purple-400 shadow-inner text-gray-600 uppercase" placeholder="#FFFFFF">
                                         </div>
                                     </div>
                                 </div>
@@ -328,7 +336,7 @@
                                         <span class="text-xs font-bold text-gray-500">卡片設定與按鈕 ({{ slide.buttons.length }}/5)</span>
                                         <div class="flex gap-2">
                                             <button @click="togglePalette('slideBg_' + slide.id)" class="text-[10px] bg-white border px-2 py-1.5 rounded-lg font-bold text-gray-600 flex items-center gap-1 shadow-sm"><span class="w-2 h-2 rounded-full border" :style="{backgroundColor: slide.bgColor || '#ffffff'}"></span> 卡片底色</button>
-                                            <button v-if="slide.buttons.length < 5" @click="slide.buttons.push({type: 'url', title:'', linkValue:'', color: '#ebedf0'})" class="text-[10px] bg-gray-900 text-white px-3 py-1.5 rounded-lg font-bold shadow-sm">新增按鈕</button>
+                                            <button v-if="slide.buttons.length < 5" @click="slide.buttons.push({type: 'url', title:'', linkValue:'', color: '#6C0B22'})" class="text-[10px] bg-gray-900 text-white px-3 py-1.5 rounded-lg font-bold shadow-sm">新增按鈕</button>
                                         </div>
                                     </div>
 
@@ -362,7 +370,7 @@
                                             <div class="flex gap-2 relative mt-1">
                                                 <input v-model="sBtn.title" class="w-1/3 text-xs p-2.5 rounded-lg border bg-gray-50 outline-none focus:ring-1 focus:ring-pink-400" placeholder="按鈕名">
                                                 <input v-model="sBtn.linkValue" class="flex-1 text-xs p-2.5 rounded-lg border bg-gray-50 outline-none focus:ring-1 focus:ring-pink-400" :placeholder="getPlaceholder(sBtn.type)">
-                                                <button @click="togglePalette('sBtn_' + slide.id + '_' + bIdx)" class="w-9 flex items-center justify-center bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 transition"><span class="w-4 h-4 rounded-full border border-gray-300" :style="{backgroundColor: sBtn.color || '#ebedf0'}"></span></button>
+                                                <button @click="togglePalette('sBtn_' + slide.id + '_' + bIdx)" class="w-9 flex items-center justify-center bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 transition"><span class="w-4 h-4 rounded-full border border-gray-300" :style="{backgroundColor: sBtn.color || '#6C0B22'}"></span></button>
                                             </div>
                                             
                                             <transition name="slide-down">
@@ -468,7 +476,6 @@
             ['#f9fafb', '#d1d5db', '#6b7280', '#1f2937', '#000000']  
         ]);
 
-        // 【更新】新增「轉發好友」按鈕類型
         const buttonTypes = ref([
             { val: 'url', label: '網頁連結' },
             { val: 'line', label: 'LINE 加好友' },
@@ -478,7 +485,6 @@
             { val: 'email', label: '發送郵件' }
         ]);
 
-        // 【更新】新增「轉發好友」的輸入框佔位提示符
         const getPlaceholder = (type) => {
             const map = { 
                 'url': '連結網址 (https://...)', 
@@ -491,7 +497,6 @@
             return map[type] || '輸入內容';
         };
 
-        // 【更新】反向解析，用於載入已儲存的轉發深層連結 (Deep Link)
         const parseLink = (url) => {
             if (!url) return { type: 'url', value: '' };
             if (url.startsWith('tel:')) return { type: 'tel', value: url.replace('tel:', '') };
@@ -503,7 +508,6 @@
             return { type: 'url', value: url };
         };
 
-        // 【更新】將轉發內容封裝為原生喚醒深層連結
         const buildFinalLink = (type, value) => {
             if (!value) return '#';
             if (type === 'tel') return value.startsWith('tel:') ? value : 'tel:' + value;
@@ -612,7 +616,9 @@
         const togglePalette = (id) => { activePaletteId.value = activePaletteId.value === id ? null : id; };
         
         const addNewButton = () => { buttons.value.push({ id: Date.now().toString(), type: 'url', title: '', linkValue: '', color: '#ffffff', iconUrl: '' }); nextTick(()=>{ window.scrollTo(0, document.body.scrollHeight); }); };
-        const addNewSlide = () => { slides.value.push({ id: Date.now().toString(), sort: slides.value.length + 1, imageUrl: '', buttonFont: '預設字體', buttonTextColor: '#1a5eb2', buttons: [] }); nextTick(() => { window.scrollTo(0, document.body.scrollHeight); }); };
+        
+        // 【優化】新增輪播時，預設帶入圖中的酒紅色 (#6C0B22) 及 白色字體
+        const addNewSlide = () => { slides.value.push({ id: Date.now().toString(), sort: slides.value.length + 1, imageUrl: '', buttonFont: '預設字體', buttonTextColor: '#ffffff', buttons: [] }); nextTick(() => { window.scrollTo(0, document.body.scrollHeight); }); };
 
         const saveAllData = async () => {
             isSaving.value = true; activePaletteId.value = null;
