@@ -22,8 +22,8 @@
     .line-header { background: #262626; color: white; padding: 35px 15px 15px 15px; font-weight: bold; display: flex; align-items: center; gap: 10px; font-size: 15px;}
     .line-carousel-container { display: flex; gap: 10px; overflow-x: auto; padding: 20px 15px; scroll-snap-type: x mandatory;}
     
-    /* 卡片不再限制高度，寬度設定為 280px 模擬大尺寸版型 */
-    .line-card { min-width: 280px; max-width: 280px; height: auto; background: white; border-radius: 16px; overflow: hidden; scroll-snap-align: center; box-shadow: 0 6px 16px rgba(0,0,0,0.15); display: flex; flex-direction: column;}
+    /* 卡片不限制高度，依靠 flex-stretch 達到等高效果。寬度設定為 280px */
+    .line-card { min-width: 280px; max-width: 280px; background: white; border-radius: 16px; overflow: hidden; scroll-snap-align: center; box-shadow: 0 6px 16px rgba(0,0,0,0.15); display: flex; flex-direction: column;}
     
     .toast-enter-active, .toast-leave-active { transition: all 0.5s ease; }
     .toast-enter-from, .toast-leave-to { opacity: 0; transform: translate(-50%, -20px); }
@@ -265,19 +265,19 @@
                     <div class="flex-1 overflow-y-auto no-scrollbar pb-6 flex flex-col justify-end">
                         <div v-if="slides.length === 0" class="text-center text-white/50 text-sm mt-10">尚無輪播卡片，請從編輯區新增</div>
                         
-                        <div class="line-carousel-container no-scrollbar items-end pb-6">
+                        <div class="line-carousel-container no-scrollbar items-stretch pb-6">
                             
-                            <div v-for="slide in slides" :key="slide.id" class="line-card flex flex-col shrink-0 h-auto pb-1" :style="{ backgroundColor: slide.bgColor || '#ffffff' }">
+                            <div v-for="slide in slides" :key="slide.id" class="line-card flex flex-col shrink-0" :style="{ backgroundColor: slide.bgColor || '#ffffff' }">
                                 
-                                <div class="relative w-full aspect-[3/4] bg-gray-100 overflow-hidden shrink-0 border-b border-gray-100/50">
+                                <div class="relative w-full aspect-[2/3] bg-gray-100 overflow-hidden shrink-0 border-b border-gray-100/50">
                                     <img v-if="slide.imageUrl" :src="slide.imageUrl" class="absolute inset-0 w-full h-full object-cover object-center">
                                     <div v-else class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 bg-gray-200">
                                         <i class="ph ph-image text-4xl mb-2"></i>
-                                        <span class="text-[10px] font-bold px-4 text-center">固定比例滿版區 (3:4)<br>按鈕將緊貼於此區域下方</span>
+                                        <span class="text-[10px] font-bold px-4 text-center">固定比例滿版區 (4:6)<br>按鈕將緊貼於此區域下方</span>
                                     </div>
                                 </div>
                                 
-                                <div v-if="slide.buttons && slide.buttons.length > 0" class="flex flex-col gap-2 p-3 shrink-0" :style="{ backgroundColor: slide.bgColor || '#ffffff' }">
+                                <div class="flex flex-col gap-2 p-3 flex-1" :style="{ backgroundColor: slide.bgColor || '#ffffff' }">
                                     <a v-for="(sBtn, bIdx) in slide.buttons" :key="bIdx" :href="buildFinalLink(sBtn.type, sBtn.linkValue)" target="_blank" class="rounded-xl p-3 text-center text-[15px] font-bold hover:opacity-80 transition" :style="{ backgroundColor: sBtn.color || '#6C0B22', color: slide.buttonTextColor || '#ffffff', fontFamily: getFontFamily(slide.buttonFont) }">
                                         {{ sBtn.title || '發送 電子名片' }}
                                     </a>
